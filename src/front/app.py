@@ -1,17 +1,42 @@
-
-
 # Interface graphique avec Tkinter------------------------------------------------------------------------------------------------------------------
           
 from tkinter import *
 from tkinter import ttk
 from turtle import bgcolor, color
 
-from pricer.back.pricer import *
+import sys
+print(sys.path)
+
+from src.back.pricer import *
+
+
+class _ChoiceScroll:
+    pass
+
+
+'''
+class _UnderlyingScroll(_ChoiceScroll):
+    def __init__(self, name):
+        self.name = name
+
+
+class EquityScroll(_UnderlyingScroll):
+    def __init__(self):
+    
+        self.name = "Equity"
+
+
+def factory_choice_scroll(name):
+    if name == "Equity":
+        return EquityScroll()
+'''    
 
 
 #Cette fonction modifie l'interface interactive en fonction du sous-jacent et du modèle sélectionnés pour la tab1
 #cacher l'imply volatility quand c'est pas equity avec BS
 def interfaceAmend(event):
+        # ut2 = ut.get()
+        #ut2 = factory_choice_scroll(ut.get())
         ut2 = ut.get()
         ot2 = ot.get()
         if (ut2 == "Equity" and ot2 == "Black Scholes European"):
@@ -214,7 +239,8 @@ if __name__ == '__main__':
     valueCB = IntVar()
     iv = Checkbutton(tab1, text="Imply Volatility", variable = valueCB).grid(column = 2,row = 7,padx = 1,pady = 1)
 
-    ttk.Button(tab1,text = "CALCULATE",command=option_calculation).grid(column = 0,row = 11,padx = 12,pady = 12)
+
+
 
     #partie results
     valuePrice = DoubleVar()
@@ -229,6 +255,30 @@ if __name__ == '__main__':
     valueTheta1 = ttk.Entry(tab1,textvariable=valueTheta).grid(column = 1,row = 17,padx = 1,pady = 1) 
     valueRho = DoubleVar()
     valueRho1 = ttk.Entry(tab1,textvariable=valueRho).grid(column = 1,row = 18,padx = 1,pady = 1) 
+
+
+    def callback_option_calculation():
+        ut2 = ut.get()
+        stop2 = stop.get()
+        vol2 = vol.get() / 100
+        rfr2 = rfr.get() / 100
+        ot2 = ot.get()
+        lif2 = lif.get()
+        strp2 = strp.get()
+        valueRB2 = valueRB.get()
+        valueCB2 = valueCB.get()
+        
+
+        p, d, g, v, t, r = option_calculation(ut2, stop2, vol2, rfr2, ot2, lif2, strp2, valueRB2,valueCB2)
+        
+        valuePrice.set(round(p,5))
+        valueDelta.set(round(d,5))
+        valueGamma.set(round(g,5))
+        valueVega.set(round(v,5))
+        valueTheta.set(round(t,5))
+        valueRho.set(round(r,5))
+
+    ttk.Button(tab1,text = "CALCULATE",command=callback_option_calculation).grid(column = 0,row = 11,padx = 12,pady = 12)
 
 
 
@@ -465,4 +515,3 @@ if __name__ == '__main__':
 
     #Affichage de la fenêtre intéractive
     fenetre.mainloop()
-

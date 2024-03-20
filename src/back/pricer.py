@@ -14,11 +14,18 @@ from tkinter import messagebox
 #from datetime import datetime, timedelta
 from scipy import interpolate
 
-import pricer.front.app
-from pricer.front.app import *
+#import pricer.front.app
+#from pricer.front.app import *
+# import src.front.app
+# from .app import *
 
+print("hello")
 
-#Cette fonction lance la fonction qui calculera le prix de l'option et ses grecques selon le sous-jacent et le modèle:
+#sys.path.append("")
+
+#from ...src.front.app import *
+ 
+"""#Cette fonction lance la fonction qui calculera le prix de l'option et ses grecques selon le sous-jacent et le modèle:
 def option_calculation():
     #tentative de mettre un msg d'alerte si pas bon type de valeur.......    
     #if (ut.get() == "" and stop.get()!= DoubleVar()):
@@ -48,7 +55,7 @@ def option_calculation():
             vol.set(res_iv)
             return
         elif (ut2 == "Equity" and ot2 == "Black Scholes European" and valueRB2 == 0 and valueCB2 == 0):
-            res2 = call_price_greeks_BS_model(stop2,vol2,rfr2,lif2,strp2)
+            p, d, g, v, t, r = call_price_greeks_BS_model(stop2,vol2,rfr2,lif2,strp2)
             
         elif (ut2 == "Equity" and ot2 == "Black Scholes European" and valueRB2 == 1 and valueCB2 == 0):
             res2 = put_price_greeks_BS_model(stop2,vol2,rfr2,lif2,strp2)
@@ -98,14 +105,85 @@ def option_calculation():
         elif (ut2 == "Equity" and ot2 == "Binary Asset Or Nothing" and valueRB2 == 1 and valueCB2 == 0):
             res2 = put_Binary_Asset_Or_Nothing_model(stop2, vol2, rfr2, lif2, strp2)
                 
+        # return p, d, g, v, t, r
 
         valuePrice.set(round(res2[0],5))
         valueDelta.set(round(res2[1],5))
         valueGamma.set(round(res2[2],5))
         valueVega.set(round(res2[3],5))
         valueTheta.set(round(res2[4],5))
-        valueRho.set(round(res2[5],5))
+        valueRho.set(round(res2[5],5))"""
 
+
+def option_calculation(ut2, stop2, vol2, rfr2, ot2, lif2, strp2, valueRB2,valueCB2):
+
+
+        if (ut2 == "Equity" and ot2 == "Black Scholes European" and valueRB2 == 0 and valueCB2 == 1): #implied vol pour un call
+            stav = 0.2 #on assume une volatilité égale à 20% sur le marché action  
+            prio2 = valuePrice.get()          
+            #faire un msg d'alerte si le prix de l'option est trop faible >= 0 et -> voir le code VBA
+            res_iv = round(call_implied_volatility_BS(stop2, strp2, rfr2, lif2, prio2, stav) * 100, 5)
+            vol.set(res_iv)
+            return
+        elif (ut2 == "Equity" and ot2 == "Black Scholes European" and valueRB2 == 1 and valueCB2 == 1): #implied vol pour un put
+            stav = 0.2 
+            prio2 = valuePrice.get()
+            res_iv = round(put_implied_volatility_BS(stop2, strp2, rfr2, lif2, prio2, stav) * 100, 5)
+            vol.set(res_iv)
+            return
+        elif (ut2 == "Equity" and ot2 == "Black Scholes European" and valueRB2 == 0 and valueCB2 == 0):
+            p, d, g, v, t, r = call_price_greeks_BS_model(stop2,vol2,rfr2,lif2,strp2)
+            
+        elif (ut2 == "Equity" and ot2 == "Black Scholes European" and valueRB2 == 1 and valueCB2 == 0):
+            res2 = put_price_greeks_BS_model(stop2,vol2,rfr2,lif2,strp2)
+            
+        elif (ut2 == "Equity" and ot2 == "Binomial European" and valueRB2 == 0 and valueCB2 == 0):
+            niter2 = int(optionalEntry2.get())
+            res2 = list([call_price_binomial_european_model(stop2, vol2, rfr2, lif2, strp2, niter2)]) + call_greeks_binomial_european_model(stop2, vol2, rfr2, lif2, strp2, niter2)
+            
+        elif (ut2 == "Equity" and ot2 == "Binomial European" and valueRB2 == 1 and valueCB2 == 0):
+            niter2 = int(optionalEntry2.get())
+            res2 = list([put_price_binomial_european_model(stop2, vol2, rfr2, lif2, strp2, niter2)]) + put_greeks_binomial_european_model(stop2, vol2, rfr2, lif2, strp2, niter2)
+            
+        elif (ut2 == "Equity" and ot2 == "Binomial American" and valueRB2 == 0 and valueCB2 == 0):
+            niter2 = int(optionalEntry2.get())
+            res2 = list([call_price_binomial_american_model(stop2, vol2, rfr2, lif2, strp2, niter2)]) + call_greeks_binomial_american_model(stop2, vol2, rfr2, lif2, strp2, niter2)
+            
+        elif (ut2 == "Equity" and ot2 == "Binomial American" and valueRB2 == 1 and valueCB2 == 0):
+            niter2 = int(optionalEntry2.get())
+            res2 = list([put_price_binomial_american_model(stop2, vol2, rfr2, lif2, strp2, niter2)]) + put_greeks_binomial_american_model(stop2, vol2, rfr2, lif2, strp2, niter2)  
+            
+        elif (ut2 == "Equity" and ot2 == "Asian" and valueRB2 == 0 and valueCB2 == 0):
+            tsi2 = float(optionalEntry2.get())
+            ca2 = float(optionalEntry3.get())
+     
+            res2 = call_price_greeks_asian(stop2, vol2, rfr2, lif2, strp2, tsi2, ca2)
+            
+        elif (ut2 == "Equity" and ot2 == "Asian" and valueRB2 == 1 and valueCB2 == 0):
+            tsi2 = float(optionalEntry2.get())
+            ca2 = float(optionalEntry3.get())
+            res2 = put_price_greeks_asian(stop2, vol2, rfr2, lif2, strp2, tsi2, ca2)
+            
+        elif (ut2 == "Equity" and ot2 == "Barrier Up And Out" and valueRB2 == 0 and valueCB2 == 0):
+            bar2 = int(optionalEntry2.get())
+            res2 = call_price_greeks_barrier_up_and_out()
+            
+        elif (ut2 == "Equity" and ot2 == "Binary Cash Or Nothing" and valueRB2 == 0 and valueCB2 == 0):
+            cash = int(optionalEntry2.get())
+            res2 = call_Binary_Cash_Or_Nothing_model(stop2, vol2, rfr2, lif2, strp2, cash)
+            
+        elif (ut2 == "Equity" and ot2 == "Binary Cash Or Nothing" and valueRB2 == 1 and valueCB2 == 0):
+            cash = int(optionalEntry2.get())
+            res2 = put_Binary_Cash_Or_Nothing_model(stop2, vol2, rfr2, lif2, strp2, cash)
+            
+        elif (ut2 == "Equity" and ot2 == "Binary Asset Or Nothing" and valueRB2 == 0 and valueCB2 == 0):
+            res2 = call_Binary_Asset_Or_Nothing_model(stop2, vol2, rfr2, lif2, strp2)
+            
+        elif (ut2 == "Equity" and ot2 == "Binary Asset Or Nothing" and valueRB2 == 1 and valueCB2 == 0):
+            res2 = put_Binary_Asset_Or_Nothing_model(stop2, vol2, rfr2, lif2, strp2)
+                
+        return p, d, g, v, t, r
+        
 
 #Cette fonction lance la fonction qui calculera le prix de l'option via Monte Carlo:
 def option_calculation_tab2():
@@ -213,6 +291,7 @@ def put_price_BS_model(stop, vol, rfr, lif, strp):
     res.append(strp * exp(-(rfr * lif)) * cdf22 - (stop * cdf1)) #prix
     return res
 
+'''
 #Cette fonction calcule le prix et les greeks pour une call européenne avec le modèle de Black et Scholes (sj equity)--------------------------------------------------------------------------
 def call_price_greeks_BS_model(stop, vol, rfr, lif, strp):
     d1 = ((log(stop/strp)) + ((rfr + ((vol**2)/2)) * lif)) / (vol * sqrt(lif))
@@ -228,6 +307,23 @@ def call_price_greeks_BS_model(stop, vol, rfr, lif, strp):
     res.append((-((stop * phi1 * vol) / (2 * sqrt(lif))) - (rfr * strp * exp(-rfr * lif) * cdf12)) / 365) #theta
     res.append((strp * lif * exp(-rfr * lif) * cdf12) / 100) #rho
     return res
+'''
+
+def call_price_greeks_BS_model(stop, vol, rfr, lif, strp):
+    d1 = ((log(stop/strp)) + ((rfr + ((vol**2)/2)) * lif)) / (vol * sqrt(lif))
+    d2 = d1 - (vol*sqrt(lif))
+    phi1 = exp(-(d1**2 / 2)) / sqrt(2*pi)
+    cdf11 = stats.norm.cdf(d1, loc = 0, scale = 1)
+    cdf12 = stats.norm.cdf(d2, loc = 0, scale = 1)
+    p = (stop * cdf11) - (strp * exp(-(rfr * lif)) * cdf12) #prix
+    d = cdf11 #delta
+    g = phi1 / (stop * vol * sqrt(lif)) #gamma
+    v = stop * phi1 * sqrt(lif) / 100 #vega
+    t = (-((stop * phi1 * vol) / (2 * sqrt(lif))) - (rfr * strp * exp(-rfr * lif) * cdf12)) / 365 #theta
+    r = (strp * lif * exp(-rfr * lif) * cdf12) / 100 #rho
+    return p, d, g, v, t, r
+
+
 
  #Cette fonction calcule le prix et les greeks pour un put européenne avec le modèle de Black et Scholes (sj equity)---------------------------------------------------------------------------
 def put_price_greeks_BS_model(stop, vol, rfr, lif, strp):
