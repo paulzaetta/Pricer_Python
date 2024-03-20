@@ -19,6 +19,12 @@ from scipy import interpolate
 # import src.front.app
 # from .app import *
 
+print(__file__)
+
+from pathlib import Path
+
+print(Path("."))
+
 print("hello")
 
 #sys.path.append("")

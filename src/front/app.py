@@ -1,20 +1,17 @@
 # Interface graphique avec Tkinter------------------------------------------------------------------------------------------------------------------
-          
+
 from tkinter import *
 from tkinter import ttk
 from turtle import bgcolor, color
 
-import sys
-print(sys.path)
-
 from src.back.pricer import *
-
-
-class _ChoiceScroll:
-    pass
+from src.front.window import WindowMain
 
 
 '''
+class _ChoiceScroll:
+    pass
+
 class _UnderlyingScroll(_ChoiceScroll):
     def __init__(self, name):
         self.name = name
@@ -31,6 +28,7 @@ def factory_choice_scroll(name):
         return EquityScroll()
 '''    
 
+"""
 
 #Cette fonction modifie l'interface interactive en fonction du sous-jacent et du modèle sélectionnés pour la tab1
 #cacher l'imply volatility quand c'est pas equity avec BS
@@ -109,7 +107,7 @@ def interfaceAmend(event):
             optionalEntry21.grid_forget()
             optionalLabel31.grid_forget()
             optionalEntry31.grid_forget()
-
+"""
 
         
 #Cette fonction modifie l'interface interactive en fonction du sous-jacent et du modèle sélectionnés pour la tab2
@@ -139,144 +137,40 @@ def interfaceAmendTab2(event):
 # N'est pas exécuté lors de l'import
 if __name__ == '__main__':
     #Création de la fenêtre intéractive
-    fenetre = Tk()
+    fenetre = WindowMain()
 
-    #Dimensionnement de la fenêtre (1000pixels de large par 800 de haut)
-    fenetre.geometry("1000x800")
+    tab1 = fenetre.get_tab(name='Options calculator')
+    tab2 = fenetre.get_tab(name='Monte Carlo', title="Pricing Options by Monte Carlo Simulation")
+    tab3 = fenetre.get_tab(name='Bonds calculator', title="Bond Price Calculator")
+    tab4 = fenetre.get_tab(name='Swaps calculator', title="Swap Price Calculator")
+    tab5 = fenetre.get_tab(name='Rates Curve', title="EUR Rates Curve")
 
-    #Ajout d'un titre à la fenêtre
-    fenetre.title("Options/Bonds/Swaps/Greeks Pricer and Monte Carlo Method")
-
-
-    #Changement de la couleur de fond et les marges de la fenêtre
-    fenetre.configure(bg="#000000", padx=10, pady=10)
-
-
-    tabControl = ttk.Notebook(fenetre)
-
-    tab1 = ttk.Frame(tabControl)
-    tab2 = ttk.Frame(tabControl)
-    tab3 = ttk.Frame(tabControl)
-    tab4 = ttk.Frame(tabControl)
-    tab5 = ttk.Frame(tabControl)
-
-    tabControl.add(tab1, text ='Options calculator')
-    tabControl.add(tab2, text ='Monte Carlo')
-    tabControl.add(tab3, text ='Bonds calculator')
-    tabControl.add(tab4, text ='Swaps calculator')
-    tabControl.add(tab5, text ='Rates Curve')
-    tabControl.pack(expand = 1, fill ="both")
-
-
+    fenetre.notebook.pack(expand = 1, fill ="both")
 
     #Options calculator widgets - tab1--------------------------------------------------------------------------------------------------------------------------------------------------------
-    label_titre1 = Label(tab1, text ="Options Pricer and Greeks Calculator",font='Helvetica 18 bold').grid(column = 1,row = 0,padx = 20,pady = 20)  
-    ttk.Label(tab1,text ="Underlying Type: ",font='Helvetica 10 bold').grid(column = 0,row = 1,padx = 12,pady = 12)  
-    ttk.Label(tab1,text ="Stock Price: ").grid(column = 0,row = 2,padx = 1,pady = 1)  
-    ttk.Label(tab1,text ="Volatility (% per year): ").grid(column = 0,row = 3,padx = 1,pady = 1)  
-    ttk.Label(tab1,text ="Risk-Free Rate (% per year): ").grid(column = 0,row = 4,padx = 1,pady = 1)
-
-    optionalLabel1 = StringVar()
-    optionalLabel11 = ttk.Label(tab1,textvariable=optionalLabel1)
-
-    ttk.Label(tab1,text ="Option Type: ",font='Helvetica 10 bold').grid(column = 0,row = 6,padx = 12,pady = 12)  
-    ttk.Label(tab1,text ="Life (Years): ").grid(column = 0,row = 7,padx = 1,pady = 1)  
-    ttk.Label(tab1,text ="Strike Price: ").grid(column = 0,row = 8,padx = 1,pady = 1)  
-
-    optionalLabel2 = StringVar()
-    optionalLabel21 = ttk.Label(tab1,textvariable=optionalLabel2)
-
-    optionalLabel3 = StringVar()
-    optionalLabel31 = ttk.Label(tab1,textvariable=optionalLabel3)
-
-    ttk.Label(tab1,text ="Results ",font='Helvetica 10 bold').grid(column = 0,row = 12,padx = 1,pady = 1)  
-    ttk.Label(tab1,text ="Price: ").grid(column = 0,row = 13,padx = 1,pady = 1)  
-    ttk.Label(tab1,text ="Delta (per €): ").grid(column = 0,row = 14,padx = 1,pady = 1)  
-    ttk.Label(tab1,text ="Gamma (per € per €): ").grid(column = 0,row = 15,padx = 1,pady = 1)  
-    ttk.Label(tab1,text ="Vega (per %): ").grid(column = 0,row = 16,padx = 1,pady = 1)  
-    ttk.Label(tab1,text ="Theta (per day): ").grid(column = 0,row = 17,padx = 1,pady = 1)  
-    ttk.Label(tab1,text ="Rho (per %): ").grid(column = 0,row = 18,padx = 1,pady = 1)  
-
-    ut = StringVar()
-    ut1 = ttk.Combobox(tab1, values=["Equity","Currency", "Index", "Futures"], textvariable=ut)
-    ut1.current(0)
-    ut1.grid(column = 1,row = 1,padx = 12,pady = 12) 
-    ut1.bind("<<ComboboxSelected>>", interfaceAmend)
-
-    stop = DoubleVar()
-    stop1 = ttk.Entry(tab1, textvariable=stop).grid(column = 1,row = 2,padx = 1,pady = 1)  
-    vol = DoubleVar()
-    vol1 = ttk.Entry(tab1, textvariable=vol).grid(column = 1,row = 3,padx = 1,pady = 1)
-    rfr = DoubleVar()
-    rfr1 = ttk.Entry(tab1, textvariable=rfr).grid(column = 1,row = 4,padx = 1,pady = 1) 
-
-    optionalEntry1 = DoubleVar()
-    optionalEntry11= ttk.Entry(tab1, textvariable=optionalEntry1)
-
-
-    ot = StringVar()
-    ot1 = ttk.Combobox(tab1, values=["Black Scholes European", "Binomial European", "Binomial American", "Asian", "Barrier Up And In", "Barrier Up And Out", "Barrier Down And In",
-                                     "Barrier Down And Out", "Binary Cash Or Nothing", "Binary Asset Or Nothing"], textvariable=ot)
-    ot1.current(0)
-    ot1.grid(column = 1,row = 6,padx = 12,pady = 12)
-    ot1.bind("<<ComboboxSelected>>", interfaceAmend)
-
-    lif = DoubleVar()
-    lif1 = ttk.Entry(tab1, textvariable=lif).grid(column = 1,row = 7,padx = 1,pady = 1)  
-    strp = DoubleVar()
-    strp1 = ttk.Entry(tab1, textvariable=strp).grid(column = 1,row = 8,padx = 1,pady = 1)  
-
-    optionalEntry2 = DoubleVar()
-    optionalEntry21 = ttk.Entry(tab1, textvariable=optionalEntry2)
-
-    optionalEntry3 = DoubleVar()
-    optionalEntry31 = ttk.Entry(tab1, textvariable=optionalEntry3)
-
-
-    valueRB = IntVar()
-    cal = Radiobutton(tab1, text="Call", variable = valueRB, value=0).grid(column = 2,row = 2,padx = 1,pady = 1)
-    put = Radiobutton(tab1, text="Put", variable = valueRB, value=1).grid(column = 2,row = 4,padx = 1,pady = 1)
-    valueCB = IntVar()
-    iv = Checkbutton(tab1, text="Imply Volatility", variable = valueCB).grid(column = 2,row = 7,padx = 1,pady = 1)
-
-
-
-
-    #partie results
-    valuePrice = DoubleVar()
-    valuePrice1 = ttk.Entry(tab1,textvariable=valuePrice).grid(column = 1,row = 13,padx = 1,pady = 1) 
-    valueDelta = DoubleVar()
-    valueDelta1 = ttk.Entry(tab1,textvariable=valueDelta).grid(column = 1,row = 14,padx = 1,pady = 1) 
-    valueGamma = DoubleVar()
-    valueGamma1 = ttk.Entry(tab1,textvariable=valueGamma).grid(column = 1,row = 15,padx = 1,pady = 1) 
-    valueVega = DoubleVar()
-    valueVega1 = ttk.Entry(tab1,textvariable=valueVega).grid(column = 1,row = 16,padx = 1,pady = 1) 
-    valueTheta = DoubleVar()
-    valueTheta1 = ttk.Entry(tab1,textvariable=valueTheta).grid(column = 1,row = 17,padx = 1,pady = 1) 
-    valueRho = DoubleVar()
-    valueRho1 = ttk.Entry(tab1,textvariable=valueRho).grid(column = 1,row = 18,padx = 1,pady = 1) 
+    tab1.label_titre.grid(column = 1,row = 0,padx = 20,pady = 20)
 
 
     def callback_option_calculation():
-        ut2 = ut.get()
-        stop2 = stop.get()
-        vol2 = vol.get() / 100
-        rfr2 = rfr.get() / 100
-        ot2 = ot.get()
-        lif2 = lif.get()
-        strp2 = strp.get()
-        valueRB2 = valueRB.get()
-        valueCB2 = valueCB.get()
+        ut2 = tab1.ut.get()
+        stop2 = tab1.stop.get()
+        vol2 = tab1.vol.get() / 100
+        rfr2 = tab1.rfr.get() / 100
+        ot2 = tab1.ot.get()
+        lif2 = tab1.lif.get()
+        strp2 = tab1.strp.get()
+        valueRB2 = tab1.valueRB.get()
+        valueCB2 = tab1.valueCB.get()
         
 
         p, d, g, v, t, r = option_calculation(ut2, stop2, vol2, rfr2, ot2, lif2, strp2, valueRB2,valueCB2)
         
-        valuePrice.set(round(p,5))
-        valueDelta.set(round(d,5))
-        valueGamma.set(round(g,5))
-        valueVega.set(round(v,5))
-        valueTheta.set(round(t,5))
-        valueRho.set(round(r,5))
+        tab1.valuePrice.set(round(p,5))
+        tab1.valueDelta.set(round(d,5))
+        tab1.valueGamma.set(round(g,5))
+        tab1.valueVega.set(round(v,5))
+        tab1.valueTheta.set(round(t,5))
+        tab1.valueRho.set(round(r,5))
 
     ttk.Button(tab1,text = "CALCULATE",command=callback_option_calculation).grid(column = 0,row = 11,padx = 12,pady = 12)
 
@@ -284,7 +178,7 @@ if __name__ == '__main__':
 
     #Monte Carlo widgets - tab2--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    label_titre1_tab2 = Label(tab2, text ="Pricing Options by Monte Carlo Simulation",font='Helvetica 18 bold').grid(columnspan = 5,row = 0,padx = 20,pady = 20)  
+    tab2.label_titre.grid(columnspan = 5,row = 0,padx = 20,pady = 20)  
 
     ttk.Label(tab2,text ="Underlying Type: ",font='Helvetica 10 bold').grid(column = 0,row = 1,padx = 12,pady = 12)  
     ttk.Label(tab2,text ="Stock Price: ").grid(column = 0,row = 2,padx = 1,pady = 1)  
@@ -366,7 +260,7 @@ if __name__ == '__main__':
 
     #Bonds calculator widgets - tab3--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    label_titre1_tab3 = Label(tab3, text ="Bond Price Calculator",font='Helvetica 18 bold').grid(columnspan = 4,row = 0,padx = 20,pady = 20) 
+    tab3.label_titre.grid(columnspan = 4,row = 0,padx = 20,pady = 20) 
 
     ttk.Label(tab3,text ="Principal:").grid(column = 0,row = 1,padx = 12,pady = 12)  
     ttk.Label(tab3,text ="Bond Life (Years):").grid(column = 0,row = 2,padx = 1,pady = 1)  
@@ -434,7 +328,7 @@ if __name__ == '__main__':
 
     #Swaps calculator widgets - tab4--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    label_titre1_tab4 = Label(tab4, text ="Swap Price Calculator",font='Helvetica 18 bold').grid(columnspan = 4,row = 0,padx = 20,pady = 20) 
+    tab4.label_titre.grid(columnspan = 4,row = 0,padx = 20,pady = 20) 
 
     from tkcalendar import DateEntry
 
@@ -510,7 +404,7 @@ if __name__ == '__main__':
 
     #Swaps Rates Curve - tab5--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    label_titre1_tab5 = Label(tab5, text ="EUR Rates Curve",font='Helvetica 18 bold').grid(columnspan = 6,row = 0,padx = 20,pady = 20) 
+    tab5.label_titre.grid(columnspan = 6,row = 0,padx = 20,pady = 20) 
 
 
     #Affichage de la fenêtre intéractive
