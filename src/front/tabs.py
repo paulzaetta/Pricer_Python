@@ -16,7 +16,6 @@ class _BaseTab(ttk.Frame):
 
 class OptionsCalculatorTab(_BaseTab):
     def __init__(self, notebook):
-        # super(OptionCalculatorTab, self).__init__(
         _BaseTab.__init__(
             self,
             notebook,
@@ -170,3 +169,125 @@ class OptionsCalculatorTab(_BaseTab):
                 self.optionalEntry3.grid_forget()
 
         return interface_amend
+    
+
+class MonteCarloTab(_BaseTab):
+    def __init__(self, notebook):
+        _BaseTab.__init__(
+            self,
+            notebook,
+            name="Monte Carlo",
+            title="Pricing Options by Monte Carlo Simulation",
+        )
+
+        self.static_settings()
+        self.set_input()
+        self.set_optional_settings()
+        self.set_combobox()
+        self.set_output()
+    
+    def static_settings(self):
+        ttk.Label(self, text="Underlying Type: ",font='Helvetica 10 bold').grid(column = 0,row = 1,padx = 12,pady = 12)  
+        ttk.Label(self, text="Stock Price: ").grid(column = 0,row = 2,padx = 1,pady = 1)  
+        ttk.Label(self, text="Risk-Free Rate (% per year): ").grid(column = 0,row = 3,padx = 1,pady = 1)
+        ttk.Label(self, text="Dividend Yield (% per year): ").grid(column = 0,row = 4,padx = 1,pady = 1)
+        ttk.Label(self, text="Simulation Data: ",font='Helvetica 10 bold').grid(column = 0,row = 6,padx = 12,pady = 12)  
+        ttk.Label(self, text="Number of Time Steps: ").grid(column = 0,row = 7,padx = 1,pady = 1)  
+        ttk.Label(self, text="Number of Simulations: ").grid(column = 0,row = 8,padx = 1,pady = 1)
+        ttk.Label(self, text="Random Seed: ").grid(column = 0,row = 9,padx = 1,pady = 1)
+        ttk.Label(self, text="Option Type: ",font='Helvetica 10 bold').grid(column = 2,row = 1,padx = 12,pady = 12)  
+        ttk.Label(self, text="Life (years): ").grid(column = 2,row = 2,padx = 1,pady = 1)  
+        ttk.Label(self, text="Strike Price: ").grid(column = 2,row = 3,padx = 1,pady = 1)
+        ttk.Label(self, text="Model Type: ").grid(column = 2,row = 6,padx = 1,pady = 1)
+        ttk.Label(self, text="Volatility (% per year): ").grid(column = 2,row = 7,padx = 1,pady = 1)
+        ttk.Label(self, text="Price: ").grid(column = 2,row = 13,padx = 1,pady = 1)  
+        ttk.Label(self, text="Standard Error: ").grid(column = 2,row = 14,padx = 1,pady = 1)
+
+    def set_input(self):
+        self.stop_tab2 = Entry(self).grid(column = 1,row = 2,padx = 1,pady = 1)
+        self.rfr_tab2 = Entry(self).grid(column = 1,row = 3,padx = 1,pady = 1)
+        self.divy_tab2 = Entry(self).grid(column = 1,row = 4,padx = 1,pady = 1)
+        self.nts_tab2 = Entry(self).grid(column = 1,row = 7,padx = 1,pady = 1)
+        self.nos_tab2 = Entry(self).grid(column = 1,row = 8,padx = 1,pady = 1)
+        self.rans_tab2 = Entry(self).grid(column = 1,row = 9,padx = 1,pady = 1)
+        self.lif_tab2 = Entry(self).grid(column = 3,row = 2,padx = 1,pady = 1)
+        self.strp_tab2 = Entry(self).grid(column = 3,row = 3,padx = 1,pady = 1)  
+        self.vol_tab2 = Entry(self).grid(column = 3,row = 7,padx = 1,pady = 1)
+
+        self.valueRB_tab2 = Radiobutton(self, call=0, put=1)
+        self.valueRB_tab2.store['call'].grid(column = 4,row = 2,padx = 1,pady = 1)
+        self.valueRB_tab2.store['put'].grid(column = 4,row = 3,padx = 1,pady = 1)
+
+    def set_output(self):
+        self.valuePrice_tab2 = Entry(self).grid(column = 3,row = 13,padx = 1,pady = 1)  
+        self.valueSD_tab2 = Entry(self).grid(column = 3,row = 14,padx = 1,pady = 1)  
+
+    def set_optional_settings(self):
+        self.optionalLabel1_tab2 = Label(self)
+        self.optionalLabel2_tab2 = Label(self)
+        self.optionalLabel3_tab2 = Label(self)
+        self.optionalEntry1_tab2 = Entry(self)
+        self.optionalEntry2_tab2 = Entry(self)
+        self.optionalEntry3_tab2 = Entry(self)
+
+    def set_combobox(self):
+        self.ut_tab2 = StringVar()
+        ut1_tab2 = ttk.Combobox(
+            self,
+            values=["Equity"],
+            textvariable=self.ut_tab2,
+        )
+        ut1_tab2.current(0)
+        ut1_tab2.grid(column = 1,row = 1,padx = 12,pady = 12) 
+        ut1_tab2.bind("<<ComboboxSelected>>", self.get_interface_amend_tab2())
+        
+        self.ot_tab2 = StringVar()
+        ot1_tab2 = ttk.Combobox(
+            self,
+            values=["European"],
+            textvariable=self.ot_tab2
+        )
+        ot1_tab2.current(0)
+        ot1_tab2.grid(column = 3,row = 1,padx = 12,pady = 12)
+        ot1_tab2.bind("<<ComboboxSelected>>", self.get_interface_amend_tab2())
+
+        self.mt_tab2 = StringVar()
+        mt1_tab2 = ttk.Combobox(
+            self,
+            values=["Log Normal", "Merton Jump Diffusion"],
+            textvariable=self.mt_tab2,
+        )
+        mt1_tab2.current(0)
+        mt1_tab2.grid(column = 3,row = 6,padx = 12,pady = 12)
+        mt1_tab2.bind("<<ComboboxSelected>>", self.get_interface_amend_tab2())
+
+    def get_interface_amend_tab2(self):
+
+        def interface_amend_tab2(event):
+            ut2_tab2 = self.ut_tab2.get()
+            ot2_tab2 = self.ot_tab2.get()
+            mt2_tab2 = self.mt_tab2.get()
+            
+            if (ut2_tab2 == "Equity" and ot2_tab2 == "European" and mt2_tab2 == "Log Normal"):
+                self.optionalLabel1_tab2.grid_forget()
+                self.optionalEntry1_tab2.grid_forget()
+                self.optionalLabel2_tab2.grid_forget()
+                self.optionalEntry2_tab2.grid_forget()
+                self.optionalLabel3_tab2.grid_forget()
+                self.optionalEntry3_tab2.grid_forget()
+            elif (ut2_tab2 == "Equity" and ot2_tab2 == "European" and mt2_tab2 == "Merton Jump Diffusion"):
+                self.optionalLabel1_tab2.grid(column = 2,row = 8,padx = 1,pady = 1)
+                self.optionalLabel1_tab2.set("Jumps per Year : ")
+                self.optionalEntry1_tab2.grid(column = 3,row = 8,padx = 1,pady = 1)
+                self.optionalLabel2_tab2.grid(column = 2,row = 9,padx = 1,pady = 1)
+                self.optionalLabel2_tab2.set("Average Jump Size (%): ")
+                self.optionalEntry2_tab2.grid(column = 3,row = 9,padx = 1,pady = 1)
+                self.optionalLabel3_tab2.grid(column = 2,row = 10,padx = 1,pady = 1)
+                self.optionalLabel3_tab2.set("Jump Std Deviation (%): ")
+                self.optionalEntry3_tab2.grid(column = 3,row = 10,padx = 1,pady = 1)
+
+        return interface_amend_tab2
+        
+
+
+

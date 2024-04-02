@@ -1,11 +1,12 @@
 from tkinter import Tk
 from tkinter import ttk
 
-from src.front.tabs import _BaseTab, OptionsCalculatorTab
+from src.front.tabs import _BaseTab, OptionsCalculatorTab, MonteCarloTab
 
 
 handle_tab = {
     "Options calculator": OptionsCalculatorTab,
+    "Monte Carlo": MonteCarloTab,
 }
 
 
