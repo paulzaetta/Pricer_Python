@@ -1,12 +1,15 @@
 from tkinter import Tk
 from tkinter import ttk
 
-from src.front.tabs import _BaseTab, OptionsCalculatorTab, MonteCarloTab
+from src.front.tabs import _BaseTab, OptionsCalculatorTab, MonteCarloTab, BondsCalculatorTab, SwapsCalculator, RatesCurve
 
 
 handle_tab = {
     "Options calculator": OptionsCalculatorTab,
     "Monte Carlo": MonteCarloTab,
+    "Bonds calculator": BondsCalculatorTab,
+    "Swaps calculator": SwapsCalculator,
+    "Rates Curve": RatesCurve,
 }
 
 
@@ -17,6 +20,7 @@ class WindowMain(Tk):
         title="Options/Bonds/Swaps/Greeks Pricer and Monte Carlo Method"
     ):
         super(WindowMain, self).__init__()
+        
         #Dimensionnement de la fenêtre (1000pixels de large par 800 de haut)
         self.geometry(size)
 

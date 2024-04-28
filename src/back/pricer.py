@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 from tkinter import messagebox
 
 #Tab3
-
+from src.back.bondsPricingFunctions import *
 
 #Tab4
-from scipy import interpolate
+from src.back.ratesCurveFunctions import *
 
 
 """
@@ -204,132 +204,19 @@ def option_calculation_tab2(ut2_tab2, stop2_tab2, vol2_tab2, rfr2_tab2, ot2_tab2
         return price, standardError, tableauSpots
 
 
-"""
-
-def option_calculation_tab2():
-        ut2_tab2 = ut_tab2.get()
-        stop2_tab2 = stop_tab2.get()
-        vol2_tab2 = vol_tab2.get() / 100
-        rfr2_tab2 = rfr_tab2.get() / 100
-        ot2_tab2 = ot_tab2.get()
-        mt2_tab2 = mt_tab2.get()
-        lif2_tab2 = lif_tab2.get()
-        strp2_tab2 = strp_tab2.get()
-        valueRB2_tab2 = valueRB_tab2.get()
-        div2_tab2 = div_tab2.get() / 100
-        nts2_tab2 =nts_tab2.get()
-        nos2_tab2 = nos_tab2.get()
-        rans2_tab2 = rans_tab2.get()
-
-        if nts2_tab2 < 2 or  nts2_tab2 > 200 :
-            messagebox.showinfo("Alert", "Number of time steps must be between 2 and 200")
-            return
-        elif nos2_tab2 < 4 or  nos2_tab2 > 10000 :
-             messagebox.showinfo("Alert", "Number of simulations must be between 4 and 10000")
-             return
-        elif ut2_tab2 == "Equity" and ot2_tab2 == "European" and mt2_tab2 == "Log Normal" and valueRB2_tab2 == 0: #Lancement de la simulation Monte-Carlo (modèle : Log-Normal) pour un Call
-            res = monteCarloEuropeanLogNormalCall(stop2_tab2, vol2_tab2 , rfr2_tab2, lif2_tab2, strp2_tab2, div2_tab2, nts2_tab2, nos2_tab2, rans2_tab2)
-        elif ut2_tab2 == "Equity" and ot2_tab2 == "European" and mt2_tab2 == "Log Normal" and valueRB2_tab2 == 1: #Lancement de la simulation Monte-Carlo (modèle : Log-Normal) pour un Put
-            res = monteCarloEuropeanLogNormalPut(stop2_tab2, vol2_tab2 , rfr2_tab2, lif2_tab2, strp2_tab2, div2_tab2, nts2_tab2, nos2_tab2, rans2_tab2)
-        elif ut2_tab2 == "Equity" and ot2_tab2 == "European" and mt2_tab2 == "Merton Jump Diffusion" and valueRB2_tab2 == 0: #Lancement de la simulation Monte-Carlo (modèle : Merton Jump Diffusion) pour un Call
-            optionalEntry12_tab2 = optionalEntry1_tab2.get()
-            optionalEntry22_tab2 = optionalEntry2_tab2.get() / 100
-            optionalEntry32_tab2 = optionalEntry3_tab2.get() / 100
-            res = monteCarloEuropeanMertonJumpDiffusionCall(stop2_tab2, vol2_tab2 , rfr2_tab2, lif2_tab2, strp2_tab2, div2_tab2, nts2_tab2, nos2_tab2, rans2_tab2,optionalEntry12_tab2, optionalEntry22_tab2, optionalEntry32_tab2)
-        elif ut2_tab2 == "Equity" and ot2_tab2 == "European" and mt2_tab2 == "Merton Jump Diffusion" and valueRB2_tab2 == 1: #Lancement de la simulation Monte-Carlo (modèle : Merton Jump Diffusion) pour un Put
-            optionalEntry12_tab2 = optionalEntry1_tab2.get()
-            optionalEntry22_tab2 = optionalEntry2_tab2.get() / 100
-            optionalEntry32_tab2 = optionalEntry3_tab2.get() / 100
-            res = monteCarloEuropeanMertonJumpDiffusionPut(stop2_tab2, vol2_tab2 , rfr2_tab2, lif2_tab2, strp2_tab2, div2_tab2, nts2_tab2, nos2_tab2, rans2_tab2,optionalEntry12_tab2, optionalEntry22_tab2, optionalEntry32_tab2)
-
-
-        #le plot sort avant les résultats..........................?????????????????????????????????????????????????
-        pri_tab2.set(round(res[0],5))
-        stae_tab2.set(round(res[1],5))
-    
-        for i in range(min(nts2_tab2,10)):
-            plt.plot(tableauSpots[i]) 
-        plt.title('First Ten Simulation Trials')
-        plt.xlabel('Time')
-        plt.ylabel('Stock Price')
-        plt.show()
-"""
-
-
 
 #####################################Tab 3#####################################
+#Cette fonction lance la fonction qui calcule le prix, le yield to maturity, la duration, la duration modifié et la convexity du bond:
+def bond_calculation_tab3(principal, bondLife, cpnRate, settFreq, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12):
+    
+    #on ne peut pas avoir plus de 12 périodes -> on améliorera plus tard -> s'insipérer du swap calculator pour créer toute la courbe ZC via les tenors
+    price, ytm, dur, mdur, con = bond_pricing(principal, bondLife, cpnRate, settFreq, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12)
+
+    return price, ytm, dur, mdur, con
+
 
 
 
 #####################################Tab 4#####################################
 
-def refreshCurve():
-# Cette fonction renvoie les taux euros et les met à jour dans la tab5
-#
-# INPUTS
-#----------------------------------------------------------------
-# no input
 
-#----------------------------------------------------------------
-# OUTPUT
-#----------------------------------------------------------------
-# Les taux euros ester, eurib1, eurib3, eurib6, eurib12 de 1d à 50y
-#----------------------------------------------------------------
-    global dataRatesCurve
-    data = pd.read_excel('C:/Users/paul/OneDrive/Bureau/python/Pricer Python/ratesCurve.xlsx')
-    ttk.Label(tab5,text = data.iloc[:,0:6]).grid(column = 0,row = 2,padx = 1,pady = 1) #update tab5
-    dataRatesCurve = data.to_numpy()
-    ester = dataRatesCurve[:,1]
-    eurib1 = dataRatesCurve[:,2]
-    eurib3 = dataRatesCurve[:,3]
-    eurib6 = dataRatesCurve[:,4]
-    eurib12 = dataRatesCurve[:,5]
-    time = np.array(list(range(1, 21)))
-    timeNew = np.linspace(1, 20, 18250)
-    
-    interpoEster = interpolate.interp1d(time, ester)
-    resultInterpoEster = interpoEster(timeNew)
-    
-    interpoEurib1 = interpolate.interp1d(time, eurib1)
-    resultInterpoEurib1 = interpoEurib1(timeNew)
-
-    interpoEurib3 = interpolate.interp1d(time, eurib3)
-    resultInterpoEurib3 = interpoEurib3(timeNew)
-
-    interpoEurib6 = interpolate.interp1d(time, eurib6)
-    resultInterpoEurib6 = interpoEurib6(timeNew)
-
-    interpoEurib12 = interpolate.interp1d(time, eurib12)
-    resultInterpoEurib12 = interpoEurib12(timeNew)
-
-    dataRatesCurve = [resultInterpoEster, resultInterpoEurib1, resultInterpoEurib3, resultInterpoEurib6, resultInterpoEurib12]
-     
-    return dataRatesCurve
-
-
-def swapComputation():
-# Cette fonction calcule le prix et la DV01 du swap
-#
-# INPUTS
-#----------------------------------------------------------------
-# no input
-
-#----------------------------------------------------------------
-# OUTPUT
-#----------------------------------------------------------------
-# Le prix et la DV01 du swap
-#----------------------------------------------------------------    
-
-
-   startDate2 = startDate.get() #'3/12/24'
-   endDate2 = endDate.get() #'3/12/24'
-
-   #essayer de savoir combien on a de jours entre les deux dates !!!!!!!!!!!!!!!!!!!!!!!!!!!
-   
-   valueRB2_tab4 = valueRB_tab4.get() #vaut 0 actuellement
-
-   print(startDate2)
-   print(endDate2)
-   
-
-   return

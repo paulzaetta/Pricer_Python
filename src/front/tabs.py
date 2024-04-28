@@ -5,6 +5,8 @@ from tkinter import ttk
 
 from src.front.widgets import (Label, Entry, Radiobutton, Checkbutton)
 
+from tkcalendar import DateEntry
+
 
 class _BaseTab(ttk.Frame):
     def __init__(self, notebook, name, title):
@@ -290,4 +292,200 @@ class MonteCarloTab(_BaseTab):
         
 
 
+class BondsCalculatorTab(_BaseTab):
+    def __init__(self, notebook):
+        _BaseTab.__init__(
+            self,
+            notebook,
+            name="Bonds calculator",
+            title="Bond Price Calculator",
+        )
 
+        self.static_settings()
+        self.set_input()
+        self.set_combobox()
+        self.set_output()
+
+    def static_settings(self):
+        ttk.Label(self, text ="Principal:").grid(column = 0,row = 2,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Bond Life (Years):").grid(column = 0,row = 3,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Coupon Rate (%):").grid(column = 0,row = 4,padx = 1,pady = 1)
+        ttk.Label(self, text ="Settlement Frequency:").grid(column = 0,row = 5,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Results ",font='Helvetica 10 bold').grid(column = 0,row = 8,padx = 1,pady = 1)
+
+        ttk.Label(self, text ="Price:").grid(column = 0,row = 9,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Yield to Maturity:").grid(column = 0,row = 10,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Duration:").grid(column = 0,row = 11,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Modified Duration:").grid(column = 0,row = 12,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Convexity:").grid(column = 0,row = 13,padx = 1,pady = 1) 
+
+        ttk.Label(self,text ="Zeros:",font='Helvetica 10 bold').grid(column = 3,row = 1,padx = 1,pady = 1)  
+ 
+    def set_input(self):
+        self.prin_tab3 = Entry(self).grid(column = 1,row = 2,padx = 1,pady = 1) 
+        self.bonl_tab3 = Entry(self).grid(column = 1,row = 3,padx = 1,pady = 1) 
+        self.cour_tab3 = Entry(self).grid(column = 1,row = 4,padx = 1,pady = 1) 
+
+        self.rates1_tab3 = Entry(self).grid(column = 3,row = 2,padx = 1,pady = 1) 
+        self.rates2_tab3 = Entry(self).grid(column = 3,row = 3,padx = 1,pady = 1) 
+        self.rates3_tab3 = Entry(self).grid(column = 3,row = 4,padx = 1,pady = 1) 
+        self.rates4_tab3 = Entry(self).grid(column = 3,row = 5,padx = 1,pady = 1) 
+        self.rates5_tab3 = Entry(self).grid(column = 3,row = 6,padx = 1,pady = 1) 
+        self.rates6_tab3 = Entry(self).grid(column = 3,row = 7,padx = 1,pady = 1) 
+        self.rates7_tab3 = Entry(self).grid(column = 3,row = 8,padx = 1,pady = 1) 
+        self.rates8_tab3 = Entry(self).grid(column = 3,row = 9,padx = 1,pady = 1) 
+        self.rates9_tab3 = Entry(self).grid(column = 3,row = 10,padx = 1,pady = 1) 
+        self.rates10_tab3 = Entry(self).grid(column = 3,row =11,padx = 1,pady = 1) 
+        self.rates11_tab3 = Entry(self).grid(column = 3,row = 12,padx = 1,pady = 1) 
+        self.rates12_tab3 = Entry(self).grid(column = 3,row = 13,padx = 1,pady = 1) 
+    
+    def set_combobox(self):
+        self.setf_tab3 = StringVar()
+        setf1_tab3 = ttk.Combobox(
+            self,
+            values=["Monthly", "Quarterly", "Semi-Annual", "Annual"],
+            textvariable=self.setf_tab3,
+        )
+        setf1_tab3.current(0)
+        setf1_tab3.grid(column = 1,row = 5,padx = 1,pady = 1) 
+
+    def set_output(self):
+        self.pric_tab3 = Entry(self).grid(column = 1,row = 9,padx = 1,pady = 1) 
+        self.ytm_tab3 = Entry(self).grid(column = 1,row = 10,padx = 1,pady = 1) 
+        self.dur_tab3 = Entry(self).grid(column = 1,row = 11,padx = 1,pady = 1) 
+        self.mdur_tab3 = Entry(self).grid(column = 1,row = 12,padx = 1,pady = 1) 
+        self.con_tab3 = Entry(self).grid(column = 1,row = 13,padx = 1,pady = 1) 
+
+
+class SwapsCalculator(_BaseTab):
+    def __init__(self, notebook):
+        _BaseTab.__init__(
+            self,
+            notebook,
+            name="Swaps calculator",
+            title="Swap Price Calculator",
+        )
+
+        self.static_settings()
+        self.set_input()
+        self.set_combobox()
+        self.set_output()
+        self.set_dateEntry()
+
+    def static_settings(self):
+        ttk.Label(self,text ="Trade",font='Helvetica 10 bold').grid(column = 0,row = 1,padx = 1,pady = 1)   
+        ttk.Label(self, text ="Start Date:").grid(column = 0,row = 2,padx = 1,pady = 1) 
+        ttk.Label(self, text ="End date:").grid(column = 2,row = 2,padx = 1,pady = 1) 
+
+        ttk.Label(self,text ="Notional fixed leg:").grid(column = 0,row =4,padx = 1,pady = 1) 
+        ttk.Label(self,text ="Fixed Rate (%):").grid(column = 0,row = 5,padx = 1,pady = 1)
+        ttk.Label(self,text ="Settlement Frequency:").grid(column = 0,row = 6,padx = 1,pady = 1) 
+        ttk.Label(self,text ="Basis:").grid(column = 0,row = 7,padx = 1,pady = 1) 
+
+        ttk.Label(self,text ="Notional float leg:").grid(column = 2,row = 4,padx = 1,pady = 1) 
+        ttk.Label(self,text ="Float Rate:").grid(column = 2,row = 5,padx = 1,pady = 1)
+        ttk.Label(self,text ="Settlement Frequency:").grid(column = 2,row = 6,padx = 1,pady = 1) 
+        ttk.Label(self,text ="Basis:").grid(column = 2,row = 7,padx = 1,pady = 1) 
+        ttk.Label(self,text ="Last Euribor (%):").grid(column = 2,row = 8,padx = 1,pady = 1)  
+
+        ttk.Label(self,text ="Valuation",font='Helvetica 10 bold').grid(column = 0,row = 9,padx = 1,pady = 1)  
+        ttk.Label(self,text ="Fixed Leg:").grid(column = 0,row =10,padx = 1,pady = 1)
+        ttk.Label(self,text ="Float Leg:").grid(column = 2,row =10,padx = 1,pady = 1)  
+        ttk.Label(self,text ="Swap Price:").grid(column = 0,row =12,padx = 1,pady = 1) 
+        ttk.Label(self,text ="DV01 (Per basis point):").grid(column = 2,row =12,padx = 1,pady = 1)
+
+        self.valueRB_tab4 = Radiobutton(self, Rec_Fixed=0, Pay_Fixed=1)
+        self.valueRB_tab4.store['Rec_Fixed'].grid(column = 1,row = 3,padx = 1,pady = 1)
+        self.valueRB_tab4.store['Pay_Fixed'].grid(column = 3,row = 3,padx = 1,pady = 1)
+    
+    def set_input(self):
+        self.not1_tab4 = Entry(self).grid(column = 1,row = 4,padx = 1,pady = 1) 
+        self.rat1_tab4 = Entry(self).grid(column = 1,row = 5,padx = 1,pady = 1) 
+        self.not2_tab4 = Entry(self).grid(column = 3,row = 4,padx = 1,pady = 1) 
+        self.lase_tab4 = Entry(self).grid(column = 3,row = 8,padx = 1,pady = 1) 
+
+    def set_combobox(self):
+        self.setf1_tab4 = StringVar()
+        setf11_tab4 = ttk.Combobox(
+            self,
+            values=["Daily", "Monthly", "Quarterly", "Semi-Annual", "Annual", "ZC"],
+            textvariable=self.setf1_tab4,
+        )
+        setf11_tab4.current(3)
+        setf11_tab4.grid(column = 1,row = 6,padx = 1,pady = 1)
+
+        self.bas1_tab4 = StringVar()
+        bas11_tab4 = ttk.Combobox(
+            self,
+            values=["A360", "A365", "30/360"],
+            textvariable=self.bas1_tab4
+        )
+        bas11_tab4.current(0)
+        bas11_tab4.grid(column = 1,row = 7,padx = 1,pady = 1) 
+
+        self.fr2_tab4 = StringVar()
+        fr21_tab4 = ttk.Combobox(
+            self,
+            values=["ESTER","EURIB1","EURIB3","EURIB6","EURIB12"],
+            textvariable=self.fr2_tab4
+        )
+        fr21_tab4.current(3)
+        fr21_tab4.grid(column = 3,row = 5,padx = 1,pady = 1)
+
+        self.setf2_tab4 = StringVar()
+        setf21_tab4 = ttk.Combobox(
+            self,
+            values=["Daily", "Monthly", "Quarterly", "Semi-Annual", "Annual", "ZC"],
+            textvariable=self.setf2_tab4
+        )
+        setf21_tab4.current(3)
+        setf21_tab4.grid(column = 3,row = 6,padx = 1,pady = 1)
+
+        self.bas2_tab4 = StringVar()
+        bas21_tab4 = ttk.Combobox(
+            self,
+            values=["A360", "A365", "30/360"],
+            textvariable=self.bas2_tab4
+        )
+        bas21_tab4.current(0)
+        bas21_tab4.grid(column = 3,row = 7,padx = 1,pady = 1) 
+    
+    def set_dateEntry(self):
+        self.startDate_tab4 = StringVar()
+        dateEntry1_tab4 = DateEntry(
+            self,
+            selectmode='day',
+            textvariable=self.startDate_tab4
+        )
+        dateEntry1_tab4.grid(column = 1,row = 2,padx = 1,pady = 1)
+
+        self.endDate_tab4 = StringVar()
+        dateEntry2_tab4 = DateEntry(
+            self,
+            selectmode='day',
+            textvariable=self.endDate_tab4
+        )
+        dateEntry2_tab4.grid(column = 3,row = 2,padx = 1,pady = 1)
+
+
+    def set_output(self):
+        self.pri1_tab4 = Entry(self).grid(column = 1,row = 10,padx = 1,pady = 1) 
+        self.pri2_tab4 = Entry(self).grid(column = 3,row = 10,padx = 1,pady = 1) 
+        self.sPri_tab4 = Entry(self).grid(column = 1,row = 12,padx = 1,pady = 1) 
+        self.sen_tab4 = Entry(self).grid(column = 3,row = 12,padx = 1,pady = 1) 
+        
+
+
+
+
+
+
+#A terminer
+class RatesCurve(_BaseTab):
+    def __init__(self, notebook):
+        _BaseTab.__init__(
+            self,
+            notebook,
+            name="Rates Curve",
+            title="EUR Rates Curve",
+        )

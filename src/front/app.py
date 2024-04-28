@@ -13,13 +13,11 @@ if __name__ == '__main__':
     #Création de la fenêtre intéractive
     fenetre = WindowMain()
     
-
     tab1 = fenetre.get_tab(name='Options calculator')
-    #tab2 = fenetre.get_tab(name='Monte Carlo', title="Pricing Options by Monte Carlo Simulation")
     tab2 = fenetre.get_tab(name='Monte Carlo')
-    tab3 = fenetre.get_tab(name='Bonds calculator', title="Bond Price Calculator")
-    tab4 = fenetre.get_tab(name='Swaps calculator', title="Swap Price Calculator")
-    tab5 = fenetre.get_tab(name='Rates Curve', title="EUR Rates Curve")
+    tab3 = fenetre.get_tab(name='Bonds calculator') 
+    tab4 = fenetre.get_tab(name='Swaps calculator')
+    tab5 = fenetre.get_tab(name='Rates Curve')
 
     fenetre.notebook.pack(expand = 1, fill ="both")
 
@@ -98,147 +96,105 @@ if __name__ == '__main__':
 
 
     #Bonds calculator widgets - tab3--------------------------------------------------------------------------------------------------------------------------------------------------------
-
     tab3.label_titre.grid(columnspan = 4,row = 0,padx = 20,pady = 20) 
 
-    ttk.Label(tab3,text ="Principal:").grid(column = 0,row = 1,padx = 12,pady = 12)  
-    ttk.Label(tab3,text ="Bond Life (Years):").grid(column = 0,row = 2,padx = 1,pady = 1)  
-    ttk.Label(tab3,text ="Coupon Rate (%):").grid(column = 0,row = 3,padx = 1,pady = 1)
-    ttk.Label(tab3,text ="Settlement Frequency:").grid(column = 0,row = 4,padx = 1,pady = 1)  
-    ttk.Label(tab3,text ="Results ",font='Helvetica 10 bold').grid(column = 0,row = 12,padx = 1,pady = 1)  
-    ttk.Label(tab3,text ="Price:").grid(column = 0,row = 13,padx = 1,pady = 1)  
-    ttk.Label(tab3,text ="Yield to Maturity:").grid(column = 0,row = 14,padx = 1,pady = 1)  
-    ttk.Label(tab3,text ="Duration:").grid(column = 0,row = 15,padx = 1,pady = 1)  
-    ttk.Label(tab3,text ="Modified Duration:").grid(column = 0,row = 16,padx = 1,pady = 1)  
-    ttk.Label(tab3,text ="Convexity:").grid(column = 0,row = 17,padx = 1,pady = 1)  
-
-    pri_tab3 = DoubleVar()
-    pri1_tab3 = ttk.Entry(tab3, textvariable=pri_tab3).grid(column = 1,row = 1,padx = 1,pady = 1) 
-    bonl_tab3 = DoubleVar()
-    bonl1_tab3 = ttk.Entry(tab3, textvariable=bonl_tab3).grid(column = 1,row = 2,padx = 1,pady = 1) 
-    cour_tab3 = DoubleVar()
-    cour1_tab3 = ttk.Entry(tab3, textvariable=cour_tab3).grid(column = 1,row = 3,padx = 1,pady = 1) 
-    setf = StringVar()
-    setf1 = ttk.Combobox(tab3, values=["Monthly", "Quarterly", "Semi-Annual", "Annual"], textvariable=setf)
-    setf1.current(0)
-    setf1.grid(column = 1,row = 4,padx = 12,pady = 12)
-
-    pri_tab3 = DoubleVar()
-    pri1_tab3 = ttk.Entry(tab3, textvariable=pri_tab3).grid(column = 1,row = 13,padx = 1,pady = 1) 
-    ytm_tab3 = DoubleVar()
-    ytm1_tab3 = ttk.Entry(tab3, textvariable=ytm_tab3).grid(column = 1,row = 14,padx = 1,pady = 1) 
-    dur_tab3 = DoubleVar()
-    dur1_tab3 = ttk.Entry(tab3, textvariable=dur_tab3).grid(column = 1,row = 15,padx = 1,pady = 1) 
-    mdur_tab3 = DoubleVar()
-    mdur1_tab3 = ttk.Entry(tab3, textvariable=mdur_tab3).grid(column = 1,row = 16,padx = 1,pady = 1) 
-    con_tab3 = DoubleVar()
-    con1_tab3 = ttk.Entry(tab3, textvariable=con_tab3).grid(column = 1,row = 17,padx = 1,pady = 1) 
+    def callback_option_calculation_tab3():
+        prin2_tab3 = tab3.prin_tab3.get()
+        bonl2_tab3 = tab3.bonl_tab3.get()
+        cour2_tab3 = tab3.cour_tab3.get()
+        setf2_tab3 = tab3.setf_tab3.get()
 
 
-    ttk.Label(tab3,text ="Zeros:",font='Helvetica 10 bold').grid(column = 3,row = 1,padx = 1,pady = 1)  
+       #à renseigner tous les inputs rate
 
-    rates1_tab3 = DoubleVar()
-    rates1_1_tab3 = ttk.Entry(tab3, textvariable=rates1_tab3).grid(column = 3,row = 2,padx = 1,pady = 1) 
-    rates2_tab3 = DoubleVar()
-    rates21_tab3 = ttk.Entry(tab3, textvariable=rates2_tab3).grid(column = 3,row = 3,padx = 1,pady = 1) 
-    rates3_tab3 = DoubleVar()
-    rates31_tab3 = ttk.Entry(tab3, textvariable=rates3_tab3).grid(column = 3,row = 4,padx = 1,pady = 1) 
-    rates4_tab3 = DoubleVar()
-    rates41_tab3 = ttk.Entry(tab3, textvariable=rates4_tab3).grid(column = 3,row = 5,padx = 1,pady = 1) 
-    rates5_tab3 = DoubleVar()
-    rates51_tab3 = ttk.Entry(tab3, textvariable=rates5_tab3).grid(column = 3,row = 6,padx = 1,pady = 1) 
-    rates6_tab3 = DoubleVar()
-    rates61_tab3 = ttk.Entry(tab3, textvariable=rates6_tab3).grid(column = 3,row = 7,padx = 1,pady = 1) 
-    rates7_tab3 = DoubleVar()
-    rates71_tab3 = ttk.Entry(tab3, textvariable=rates7_tab3).grid(column = 3,row = 8,padx = 1,pady = 1) 
-    rates8_tab3 = DoubleVar()
-    rates81_tab3 = ttk.Entry(tab3, textvariable=rates8_tab3).grid(column = 3,row = 9,padx = 1,pady = 1) 
-    rates9_tab3 = DoubleVar()
-    rates91_tab3 = ttk.Entry(tab3, textvariable=rates9_tab3).grid(column = 3,row = 10,padx = 1,pady = 1) 
-    rates10_tab3 = DoubleVar()
-    rates101_tab3 = ttk.Entry(tab3, textvariable=rates10_tab3).grid(column = 3,row =11,padx = 1,pady = 1) 
-    rates11_tab3 = DoubleVar()
-    rates111_tab3 = ttk.Entry(tab3, textvariable=rates11_tab3).grid(column = 3,row = 12,padx = 1,pady = 1) 
-    rates12_tab3 = DoubleVar()
-    rates121_tab3 = ttk.Entry(tab3, textvariable=rates12_tab3).grid(column = 3,row = 13,padx = 1,pady = 1) 
+        price, ytm, dur, mdur, con = bond_calculation_tab3(prin2_tab3, bonl2_tab3, cour2_tab3, setf2_tab3, r1=0, r2=0, r3=0, r4=0, r5=0, r6=0, r7=0, r8=0, r9=0, r10=0, r11=0, r12=0)
+        #price, ytm, dur, mdur, con = bond_calculation_tab3(prin2_tab3, bonl2_tab3, cour2_tab3, setf2_tab3, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12)
 
-    ttk.Button(tab3,text = "CALCULATE").grid(column = 3,row = 15,padx = 1,pady = 11)
+        tab3.pric_tab3.set(round(price,5))
+        tab3.ytm_tab3.set(round(ytm,5))
+        tab3.dur_tab3.set(round(dur,5))
+        tab3.mdur_tab3.set(round(mdur,5))
+        tab3.con_tab3.set(round(con,5))
+
+
+    ttk.Button(tab3,text = "CALCULATE", command=callback_option_calculation_tab3).grid(column = 3,row = 15,padx = 1,pady = 11)
 
 
     #Swaps calculator widgets - tab4--------------------------------------------------------------------------------------------------------------------------------------------------------
-
+    import pandas as pd
     tab4.label_titre.grid(columnspan = 4,row = 0,padx = 20,pady = 20) 
+     
+    #idée: aller chercher les tenors sur internet via API ????
+    def callback_option_calculation_1_tab4():
+        data = pd.read_excel('C:/Users/paul/OneDrive/Bureau/python/Pricer Python/ratesCurve.xlsx')
+        ttk.Label(tab5,text = data.iloc[:,0:6]).grid(column = 0,row = 2,padx = 1,pady = 1)
+        dataRatesCurve = refreshCurve(data)
 
-    from tkcalendar import DateEntry
+    ttk.Button(tab4,text = "Refresh Curve", command=callback_option_calculation_1_tab4).grid(column = 0,row = 14,padx = 1,pady = 1)
+    
 
-    ttk.Label(tab4,text ="Start Date:").grid(column = 0,row = 1,padx = 1,pady = 1) 
-    startDate=StringVar() # declaring string variable
-    cal1=DateEntry(tab4,selectmode='day',textvariable=startDate)
-    cal1.grid(column = 1,row = 1,padx = 1,pady = 1)
-    ttk.Label(tab4,text ="End date:").grid(column = 2,row = 1,padx = 1,pady = 1) 
-    endDate=StringVar() # declaring string variable 
-    cal2=DateEntry(tab4,selectmode='day',textvariable=endDate)
-    cal2.grid(column = 3,row = 1,padx = 1,pady = 1)
+    def callback_option_calculation_2_tab4():
 
-    valueRB_tab4 = IntVar()
-    rec_tab4 = Radiobutton(tab4, text="Rec Fixed", variable = valueRB_tab4, value=0).grid(column = 0,row = 2,padx = 1,pady = 1)
-    pay_tab4 = Radiobutton(tab4, text="Pay Fixed", variable = valueRB_tab4 , value=1).grid(column = 2,row = 2,padx = 1,pady = 1)
+        data = pd.read_excel('C:/Users/paul/OneDrive/Bureau/python/Pricer Python/ratesCurve.xlsx')
+        dataRatesCurve = refreshCurve2(data)
+        
+        startDate_tab4 = tab4.startDate_tab4.get() #4/9/24
+        endDate_tab4 = tab4.endDate_tab4.get() #4/9/24
+
+        valueRB_tab4 = tab4.valueRB_tab4.get()  #vaut 0 actuellement quand on rec
+        not1_tab4 =tab4.not1_tab4.get()
+        not2_tab4 = tab4.not2_tab4.get()
+        rat1_tab4 = tab4.rat1_tab4.get()
+        setf1_tab4 = tab4.setf1_tab4.get()
+        bas1_tab4 = tab4.bas1_tab4.get()
+        fr2_tab4 = tab4.fr2_tab4.get()
+        setf2_tab4 = tab4.setf2_tab4.get()
+        bas2_tab4 = tab4.bas2_tab4.get()
+        lase_tab4 = tab4.lase_tab4.get() 
+
+        global tab1
+        global tab2
+        global tab22
+
+        priceSwap, dv01, priceFixed, priceFloat, tab1, tab2, tab22= swapComputation(startDate_tab4,endDate_tab4,valueRB_tab4,not1_tab4,not2_tab4,rat1_tab4,fr2_tab4,setf1_tab4,setf2_tab4,bas1_tab4,bas2_tab4,lase_tab4,dataRatesCurve)
+        tab4.pri1_tab4.set(round(priceFixed,5))
+        tab4.pri2_tab4.set(round(priceFloat,5))
+        tab4.sen_tab4.set(round(dv01,5))
+        tab4.sPri_tab4.set(round(priceSwap,5))
+
+    ttk.Button(tab4,text = "CALCULATE",command=callback_option_calculation_2_tab4).grid(column = 0,row = 15,padx = 1,pady = 1)
+
+    
+    #à revoir et à mettre au bon endroit + permettre le copier coller ? 
+    def flows_display_tab4(tab):
+        mywin=Tk()
+        mywin.geometry('1650x400')
+
+        df_list=list(tab.columns.values)
+        df_rset=tab.to_numpy().tolist()
+        df_tree=ttk.Treeview(mywin,columns=df_list)
+        df_tree.pack()
+    
+        for i in df_list:
+            df_tree.column(i,width=100,anchor='c')
+            df_tree.heading(i,text=i)
+        for dt in df_rset:
+            v=[r for r in dt]
+            df_tree.insert('','end',iid=v[0], values=v)
+
+        mywin.mainloop()
 
 
-    #Fixed leg:
-    ttk.Label(tab4,text ="Notional fixed leg:").grid(column = 0,row =3,padx = 1,pady = 1) 
-    ttk.Label(tab4,text ="Fixed Rate (%):").grid(column = 0,row = 4,padx = 1,pady = 1)
-    ttk.Label(tab4,text ="Settlement Frequency:").grid(column = 0,row = 5,padx = 1,pady = 1) 
-    ttk.Label(tab4,text ="Basis:").grid(column = 0,row = 6,padx = 1,pady = 1) 
-    not1_tab4 = DoubleVar()
-    not11_tab4 = ttk.Entry(tab4, textvariable=not1_tab4).grid(column = 1,row = 3,padx = 1,pady = 1) 
-    rat1_tab4 = DoubleVar()
-    rat11_tab4 = ttk.Entry(tab4, textvariable=rat1_tab4).grid(column = 1,row = 4,padx = 1,pady = 1) 
-    setf1 = StringVar()
-    setf11 = ttk.Combobox(tab4, values=["Daily", "Monthly", "Quarterly", "Semi-Annual", "Annual", "ZC"], textvariable=setf1)
-    setf11.current(0)
-    setf11.grid(column = 1,row = 5,padx = 1,pady = 1)
-    bas1 = StringVar()
-    bas11 = ttk.Combobox(tab4, values=["A360", "A365", "30/360"], textvariable=bas1)
-    bas11.current(0)
-    bas11.grid(column = 1,row = 6,padx = 1,pady = 1) 
+    def callback_display_fixed_tab4():
+        flows_display_tab4(tab1)
 
-    #Float leg
-    ttk.Label(tab4,text ="Notional float leg:").grid(column = 2,row = 3,padx = 1,pady = 1) 
-    ttk.Label(tab4,text ="Float Rate:").grid(column = 2,row = 4,padx = 1,pady = 1)
-    ttk.Label(tab4,text ="Settlement Frequency:").grid(column = 2,row = 5,padx = 1,pady = 1) 
-    ttk.Label(tab4,text ="Basis:").grid(column = 2,row = 6,padx = 1,pady = 1) 
-    ttk.Label(tab4,text ="Last Euribor (%):").grid(column = 2,row = 7,padx = 1,pady = 1)  
-    not2_tab4 = DoubleVar()
-    not21_tab4 = ttk.Entry(tab4, textvariable=not2_tab4).grid(column = 3,row = 3,padx = 1,pady = 1) 
-    setf2 = StringVar()
-    setf21 = ttk.Combobox(tab4, values=["ESTER","EURIB1","EURIB3","EURIB6","EURIB12"], textvariable=setf2)
-    setf21.current(0)
-    setf21.grid(column = 3,row = 4,padx = 1,pady = 1)
-    setf3 = StringVar()
-    setf31 = ttk.Combobox(tab4, values=["Daily", "Monthly", "Quarterly", "Semi-Annual", "Annual", "ZC"], textvariable=setf3)
-    setf31.current(0)
-    setf31.grid(column = 3,row = 5,padx = 1,pady = 1)
-    bas2 = StringVar()
-    bas21 = ttk.Combobox(tab4, values=["A360", "A365", "30/360"], textvariable=bas2)
-    bas21.current(0)
-    bas21.grid(column = 3,row = 6,padx = 1,pady = 1) 
-    lase_tab4 = DoubleVar()
-    lase1_tab4 = ttk.Entry(tab4, textvariable=lase_tab4).grid(column = 3,row = 7,padx = 1,pady = 1) 
+    def callback_display_float_tab4():
+        flows_display_tab4(tab2)
 
-    #Result
-    ttk.Label(tab4,text ="Results ",font='Helvetica 10 bold').grid(column = 0,row = 8,padx = 1,pady = 1)  
-    ttk.Label(tab4,text ="Price (%):").grid(column = 0,row =9,padx = 1,pady = 1) 
-    ttk.Label(tab4,text ="Price (€):").grid(column = 0,row =10,padx = 1,pady = 1) 
-    ttk.Label(tab4,text ="DV01 (Per basis point):").grid(column = 0,row =11,padx = 1,pady = 1) 
-    pri1_tab4 = DoubleVar()
-    pri11_tab4 = ttk.Entry(tab4, textvariable=pri1_tab4).grid(column = 1,row = 9,padx = 1,pady = 1) 
-    pri2_tab4 = DoubleVar()
-    pri21_tab4 = ttk.Entry(tab4, textvariable=pri2_tab4).grid(column = 1,row = 10,padx = 1,pady = 1) 
-    sen_tab4 = DoubleVar()
-    sen1_tab4 = ttk.Entry(tab4, textvariable=sen_tab4).grid(column = 1,row = 11,padx = 1,pady = 1) 
-    ttk.Button(tab4,text = "Refresh Curve",command=refreshCurve).grid(column = 2,row = 9,padx = 1,pady = 1)
-    ttk.Button(tab4,text = "CALCULATE",command=swapComputation).grid(column = 2,row = 11,padx = 1,pady = 1)
+
+    ttk.Button(tab4,text = "Fixed flows", command=callback_display_fixed_tab4).grid(column = 0,row = 3,padx = 1,pady = 1)
+
+    ttk.Button(tab4,text = "Float flows", command=callback_display_float_tab4).grid(column = 2,row = 3,padx = 1,pady = 1)
 
 
     #Swaps Rates Curve - tab5--------------------------------------------------------------------------------------------------------------------------------------------------------
