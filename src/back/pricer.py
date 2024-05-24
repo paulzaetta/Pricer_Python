@@ -206,15 +206,6 @@ def option_calculation_tab2(ut2_tab2, stop2_tab2, vol2_tab2, rfr2_tab2, ot2_tab2
 
 
 #####################################Tab 3#####################################
-#Cette fonction lance la fonction qui calcule le prix, le yield to maturity, la duration, la duration modifié et la convexity du bond:
-def bond_calculation_tab3(principal, bondLife, cpnRate, settFreq, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12):
-    
-    #on ne peut pas avoir plus de 12 périodes -> on améliorera plus tard -> s'insipérer du swap calculator pour créer toute la courbe ZC via les tenors
-    price, ytm, dur, mdur, con = bond_pricing(principal, bondLife, cpnRate, settFreq, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12)
-
-    return price, ytm, dur, mdur, con
-
-
 
 
 #####################################Tab 4#####################################

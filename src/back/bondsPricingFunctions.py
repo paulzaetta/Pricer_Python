@@ -1,85 +1,159 @@
-"""
-from math import *
+import numpy as np
+import numpy_financial as npf
+import pandas as pd
+from datetime import date
+from scipy import interpolate
 
-def bond_pricing(principal, bondLife, cpnRate, settFreq, r1=0, r2=0, r3=0, r4=0, r5=0, r6=0, r7=0, r8=0, r9=0, r10=0, r11=0, r12=0):
+from pandas.tseries.offsets import DateOffset
+from datetime import datetime
+from datetime import timedelta
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
-    frequence = settFreq
 
-    compteur_periodes = 0
-    price = 0
+def bond_calculation(principal,couponRate,settF,cpnDate,dataRatesCurve):
+# Cette fonction calcule le prix, le YTM, la duration, la duration modifiée et la convexité d'un bond
+#
+# INPUTS
+#------------------------------------------------------------------------------
+# principal       : principal du bond
+# couponRate      : le coupon du bond en pourcentage
+# settF           : la fréquence du détachement des coupons
+# cpnDate         : la date du dernier détachement de coupon
+# dataRatesCurve  : matrice de taux
+#------------------------------------------------------------------------------
+# OUTPUTS
+#------------------------------------------------------------------------------
+# prix             : prix du bond en pourcentage du nominal 
+# YTM              : yield to maturity (Taux Rendement Actuariel)
+# macDuration      : duration Macaulay
+# modDuration      : modified duration
+# conv             : convexity
+# sensi            : sensibilité du bond (modDuration + conv) si shift d'un bp
+# fluxBond         : flux du bond
+#------------------------------------------------------------------------------
 
-    prin = principal
-    bond_life = bondLife
-    coupon = cpnRate
+    #Ajustement du format des dates:
+    startDate = datetime.today()
+    startDate = startDate.replace(hour=0, minute=0, second=0, microsecond=0)
+    endDate = datetime.strptime(cpnDate, '%m/%d/%y')
 
-    if (frequence=="Monthly"):
-        multiplicateur_periodes = 12
-    elif (frequence=="Quarterly"):
-        multiplicateur_periodes = 4
-    elif (frequence=="Semi-Annual"):
-        multiplicateur_periodes = 2
-    elif (frequence=="Annual"):
-        multiplicateur_periodes = 1
+    #Nombre de mois sur la période:
+    months = (endDate.year - startDate.year)*12 + endDate.month - startDate.month
+
+    #Ajustement en fonction des fréquences de roll:
+    if settF == "Annual":
+        ii = 1
+        period = 12
+    elif settF == "Semi-Annual":
+        ii = 1/2
+        period = 6
+    elif settF == "Quarterly":
+        ii = 1/4
+        period = 3
+    elif settF == "Monthly":
+        ii = 1/12
+        period = 1
+    elif settF == "Zero-Coupon":
+        ii = 1
+        period = months
+
+
+    #Flow tab:
+    datesRoll = pd.DatetimeIndex([endDate - DateOffset(months=e) for e in range(0, months, period)][::-1]).insert(0, startDate)
+  
+    nbrDays = datesRoll[1:] - datesRoll[:-1]
+    nbrDays = pd.DataFrame(data=nbrDays.days, columns=["Days"])
+
+    startDates = pd.DataFrame(data=datesRoll[:-1], columns=["Start"])
+    endDates = pd.DataFrame(data=datesRoll[1:], columns=["End"])
+
+    #on décale les dates de paiement au prochain jour ouvré si close day:
+    paymentDates = datesRoll[1:]
+    for i, date in enumerate(paymentDates):
+        if date.weekday() >= 5: # Saturday or Sunday
+            paymentDates = paymentDates.delete(i)
+            paymentDates = paymentDates.insert(i, date + pd.offsets.BDay())
+
+    nbrDaysPay=paymentDates-pd.Timestamp(date.today())        
+    nbrDaysPay=pd.DataFrame(data=nbrDaysPay.days, columns=["CumDays"])
+    paymentDates=pd.DataFrame(data=paymentDates, columns=["Payment Date"])
+
+    finalResults=pd.concat([startDates, endDates], axis=1) #start et end dates
+    finalResults=pd.concat([finalResults, nbrDays], axis=1) #nbr de jours par période
+    finalResults['Rate'] = couponRate
+    finalResults['Nominal'] = principal 
+    finalResults=pd.concat([finalResults, paymentDates], axis=1) # payment dates
+    #finalResults['Flows'] = round(finalResults['Rate'] * ii * finalResults['Nominal'] / 100,2) #flows
+
+    nbrDaysFullPeriod = datesRoll[1:] - (datesRoll[1:] + pd.DateOffset(months=-period))
+    nbrDaysFullPeriod = pd.DataFrame(data=nbrDaysFullPeriod.days, columns=['Days'])
+    finalResults['Flows'] = round(finalResults['Rate'] * ii * finalResults['Nominal'] * finalResults['Days'] / nbrDaysFullPeriod['Days'] / 100,2) #flows
+    finalResults.loc[len(finalResults)-1, 'Flows'] = finalResults.loc[len(finalResults)-1, 'Flows'] + principal
+    finalResults=pd.concat([finalResults, nbrDaysPay], axis=1) #nbr de jours pour l'actualisation
+
+    #faire l'actualisation des flux -> récupérer le taux sans risque de la date de paiment et divisé le flux par ce taux (1+r)^per
+    tableauDiscount = [[0] * (2) for _ in range(len(finalResults))]
+    for i in range(len(finalResults)):
+        a = finalResults.iloc[i]['Payment Date'].date() 
+        a = a.strftime('%Y-%m-%d')
+        tableauDiscount[i][0] = a
+        tableauDiscount[i][1] = dataRatesCurve.iloc[dataRatesCurve.index.get_loc(a), dataRatesCurve.columns.get_loc('GERMANY')]
+
+    # Convert list to DataFrame
+    tableauDiscount_df = pd.DataFrame(tableauDiscount, columns=['Payment Date', 'Zeros'])
+    tableauDiscount_df.drop(columns=['Payment Date'], inplace=True)
+
+    finalResults = pd.concat([finalResults, round(tableauDiscount_df,5)], axis=1) #taux ZC
+    finalResults['Discount'] = round(1 / ((1+((finalResults['Zeros']*ii/100)))**(finalResults['CumDays']/(360*ii))),5)
+
+    finalResults['PV'] = round(finalResults['Flows'] * finalResults['Discount'],2)
+
+    #prix de l'obligation en pourcentage du nominal
+    prix = 100 * sum(finalResults['PV']) / principal
+
+    # Taux de Rendement Actuariel (voir plus en détail comment ils ont développé cette fonction irr)
+    if settF == "Zero-Coupon":
+        flows = [0 for x in range((endDate.year - startDate.year)-1)]
+        flows.append(100)
+
+    else:
+        flows = 100 * finalResults['Flows'] / principal
+        flows = flows.to_list()
+
+    flows.insert(0, -prix)
+    YTM = npf.irr(flows) * 100 / ii
     
+    # Macaulay Duration:
+    if settF == "Zero-Coupon":
+        delta = relativedelta(endDate, startDate)
+        years = delta.years
+        months = delta.months
+        days = delta.days
+        macDuration = years + months / 12 + days / 365.25
+    else: 
+        macDuration = 0 
+        for i in range (len(finalResults)):
+            macDuration = macDuration + (((i+1)*ii)*finalResults['PV'][i])
+        macDuration = macDuration / (principal * prix / 100) 
 
-    nb_periodes = bond_life * multiplicateur_periodes
+    # Modified duration
+    modDuration = macDuration / (1+(YTM/100))
 
-    #Calcul prix
-    for i in range(1, nb_periodes):
-        compteur_periodes = compteur_periodes + (1 / multiplicateur_periodes)
-        taux_zc = Cells(i + 2, 7).Value
-        if (compteur_periodes != bond_life):
-            price = price + (coupon / multiplicateur_periodes) * exp(-taux_zc * compteur_periodes)
-        else:
-            price = price + ((principal / 100) + coupon / multiplicateur_periodes) * exp(-taux_zc * compteur_periodes)
+    # Convexity : 
+    conv = 0 
+    for i in range (len(finalResults)):
+        conv = conv + ((((i+1)*ii)**2)*finalResults['PV'][i])
+    conv = conv / (principal * prix / 100) 
     
-    price = price * 100
-    
-
-    #Calcul Yield To Maturity
-    Dim tableau_flux() As Double
-    ReDim tableau_flux(0 To nb_periodes)
-    tableau_flux(0) = -price
-    For k = 1 To nb_periodes - 1
-        tableau_flux(k) = coupon / multiplicateur_periodes
-    Next k
-
-    tableau_flux(nb_periodes) = coupon / multiplicateur_periodes + principal / 100
-    TRA = Application.WorksheetFunction.IRR(tableau_flux)
-    TRA = TRA * multiplicateur_periodes
-    Range("D22").Value = TRA
-
-    #Calcul Duration
-    For j = 1 To nb_periodes
-        compteur_periodes_2 = compteur_periodes_2 + (1 / multiplicateur_periodes)
-        taux_zc = Cells(j + 2, 7).Value
-        If compteur_periodes_2 <> bond_life Then
-            num_duration = num_duration + (compteur_periodes_2 * coupon / multiplicateur_periodes) * Exp(-taux_zc * compteur_periodes_2)
-        Else
-            num_duration = num_duration + compteur_periodes_2 * ((principal / 100) + coupon / multiplicateur_periodes) * Exp(-taux_zc * compteur_periodes_2)
-        End If
-    Next j
-    duration = num_duration / price
-    Range("D23").Value = duration
-
-    #Calcul sensibilite
-    mod_duration = duration / (1 + TRA)
-    Range("D24").Value = mod_duration
-
-    #Calcul convexite
-    For l = 1 To nb_periodes
-        compteur_periodes_3 = compteur_periodes_3 + (1 / multiplicateur_periodes)
-        taux_zc = Cells(j + 2, 7).Value
-        If compteur_periodes_3 <> bond_life Then
-            num_conv = num_conv + (compteur_periodes_3 ^ 2 * coupon / multiplicateur_periodes) * Exp(-taux_zc * compteur_periodes_3)
-        Else
-            num_conv = num_conv + compteur_periodes_3 ^ 2 * ((principal / 100) + coupon / multiplicateur_periodes) * Exp(-taux_zc * compteur_periodes_3)
-        End If
-    Next l
-    convexite = (1 / (1 + TRA) ^ 2) * (duration + num_conv / price)
-    Range("D25").Value = convexite
-    End If
+    # Sensi (shift d'un % - a voir si faut mettre le shift d'un bp plutôt): 
+    sensi = ((-modDuration*0.01) + (0.5*conv*0.01*0.01)) * prix
 
 
-    return price, ytm, dur, mdur, con
-"""
+    return prix, YTM , macDuration, modDuration, conv, sensi, finalResults
+
+
+
+
+
+

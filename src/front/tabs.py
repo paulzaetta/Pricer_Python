@@ -305,57 +305,54 @@ class BondsCalculatorTab(_BaseTab):
         self.set_input()
         self.set_combobox()
         self.set_output()
+        self.set_dateEntry()
 
     def static_settings(self):
-        ttk.Label(self, text ="Principal:").grid(column = 0,row = 2,padx = 1,pady = 1)  
-        ttk.Label(self, text ="Bond Life (Years):").grid(column = 0,row = 3,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Trade:",font='Helvetica 10 bold').grid(column = 0,row = 2,padx = 1,pady = 1)
+        ttk.Label(self, text ="Principal:").grid(column = 0,row = 3,padx = 1,pady = 1)  
         ttk.Label(self, text ="Coupon Rate (%):").grid(column = 0,row = 4,padx = 1,pady = 1)
         ttk.Label(self, text ="Settlement Frequency:").grid(column = 0,row = 5,padx = 1,pady = 1)  
-        ttk.Label(self, text ="Results ",font='Helvetica 10 bold').grid(column = 0,row = 8,padx = 1,pady = 1)
+        ttk.Label(self, text ="Final Coupon Date:").grid(column = 0,row = 6,padx = 1,pady = 1)  
 
-        ttk.Label(self, text ="Price:").grid(column = 0,row = 9,padx = 1,pady = 1)  
-        ttk.Label(self, text ="Yield to Maturity:").grid(column = 0,row = 10,padx = 1,pady = 1)  
-        ttk.Label(self, text ="Duration:").grid(column = 0,row = 11,padx = 1,pady = 1)  
-        ttk.Label(self, text ="Modified Duration:").grid(column = 0,row = 12,padx = 1,pady = 1)  
-        ttk.Label(self, text ="Convexity:").grid(column = 0,row = 13,padx = 1,pady = 1) 
+        ttk.Label(self, text ="Results:",font='Helvetica 10 bold').grid(column = 0,row = 9,padx = 1,pady = 1)
+        ttk.Label(self, text ="Clean Price:").grid(column = 0,row = 10,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Yield to Maturity (%):").grid(column = 0,row = 11,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Duration:").grid(column = 0,row = 12,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Modified Duration:").grid(column = 0,row = 13,padx = 1,pady = 1)  
+        ttk.Label(self, text ="Convexity:").grid(column = 0,row = 14,padx = 1,pady = 1) 
+        ttk.Label(self, text ="Sensibility:").grid(column = 0,row = 15,padx = 1,pady = 1) 
 
-        ttk.Label(self,text ="Zeros:",font='Helvetica 10 bold').grid(column = 3,row = 1,padx = 1,pady = 1)  
- 
+
     def set_input(self):
-        self.prin_tab3 = Entry(self).grid(column = 1,row = 2,padx = 1,pady = 1) 
-        self.bonl_tab3 = Entry(self).grid(column = 1,row = 3,padx = 1,pady = 1) 
+        self.prin_tab3 = Entry(self).grid(column = 1,row = 3,padx = 1,pady = 1) 
         self.cour_tab3 = Entry(self).grid(column = 1,row = 4,padx = 1,pady = 1) 
 
-        self.rates1_tab3 = Entry(self).grid(column = 3,row = 2,padx = 1,pady = 1) 
-        self.rates2_tab3 = Entry(self).grid(column = 3,row = 3,padx = 1,pady = 1) 
-        self.rates3_tab3 = Entry(self).grid(column = 3,row = 4,padx = 1,pady = 1) 
-        self.rates4_tab3 = Entry(self).grid(column = 3,row = 5,padx = 1,pady = 1) 
-        self.rates5_tab3 = Entry(self).grid(column = 3,row = 6,padx = 1,pady = 1) 
-        self.rates6_tab3 = Entry(self).grid(column = 3,row = 7,padx = 1,pady = 1) 
-        self.rates7_tab3 = Entry(self).grid(column = 3,row = 8,padx = 1,pady = 1) 
-        self.rates8_tab3 = Entry(self).grid(column = 3,row = 9,padx = 1,pady = 1) 
-        self.rates9_tab3 = Entry(self).grid(column = 3,row = 10,padx = 1,pady = 1) 
-        self.rates10_tab3 = Entry(self).grid(column = 3,row =11,padx = 1,pady = 1) 
-        self.rates11_tab3 = Entry(self).grid(column = 3,row = 12,padx = 1,pady = 1) 
-        self.rates12_tab3 = Entry(self).grid(column = 3,row = 13,padx = 1,pady = 1) 
-    
     def set_combobox(self):
         self.setf_tab3 = StringVar()
         setf1_tab3 = ttk.Combobox(
             self,
-            values=["Monthly", "Quarterly", "Semi-Annual", "Annual"],
+            values=["Monthly", "Quarterly", "Semi-Annual", "Annual", "Zero-Coupon"],
             textvariable=self.setf_tab3,
         )
-        setf1_tab3.current(0)
+        setf1_tab3.current(3)
         setf1_tab3.grid(column = 1,row = 5,padx = 1,pady = 1) 
 
-    def set_output(self):
-        self.pric_tab3 = Entry(self).grid(column = 1,row = 9,padx = 1,pady = 1) 
-        self.ytm_tab3 = Entry(self).grid(column = 1,row = 10,padx = 1,pady = 1) 
-        self.dur_tab3 = Entry(self).grid(column = 1,row = 11,padx = 1,pady = 1) 
-        self.mdur_tab3 = Entry(self).grid(column = 1,row = 12,padx = 1,pady = 1) 
-        self.con_tab3 = Entry(self).grid(column = 1,row = 13,padx = 1,pady = 1) 
+    def set_dateEntry(self):
+        self.couponDate_tab3 = StringVar()
+        couponDateEntry_tab3 = DateEntry(
+            self,
+            selectmode='day',
+            textvariable=self.couponDate_tab3
+        )
+        couponDateEntry_tab3.grid(column = 1,row = 6,padx = 1,pady = 1)
 
+    def set_output(self):
+        self.pric_tab3 = Entry(self).grid(column = 1,row = 10,padx = 1,pady = 1) 
+        self.ytm_tab3 = Entry(self).grid(column = 1,row = 11,padx = 1,pady = 1) 
+        self.dur_tab3 = Entry(self).grid(column = 1,row = 12,padx = 1,pady = 1) 
+        self.mdur_tab3 = Entry(self).grid(column = 1,row = 13,padx = 1,pady = 1) 
+        self.con_tab3 = Entry(self).grid(column = 1,row = 14,padx = 1,pady = 1) 
+        self.sen_tab3 = Entry(self).grid(column = 1,row = 15,padx = 1,pady = 1) 
 
 class SwapsCalculator(_BaseTab):
     def __init__(self, notebook):
@@ -373,7 +370,7 @@ class SwapsCalculator(_BaseTab):
         self.set_dateEntry()
 
     def static_settings(self):
-        ttk.Label(self,text ="Trade",font='Helvetica 10 bold').grid(column = 0,row = 1,padx = 1,pady = 1)   
+        ttk.Label(self,text ="Trade:",font='Helvetica 10 bold').grid(column = 0,row = 1,padx = 1,pady = 1)   
         ttk.Label(self, text ="Start Date:").grid(column = 0,row = 2,padx = 1,pady = 1) 
         ttk.Label(self, text ="End date:").grid(column = 2,row = 2,padx = 1,pady = 1) 
 
@@ -388,11 +385,13 @@ class SwapsCalculator(_BaseTab):
         ttk.Label(self,text ="Basis:").grid(column = 2,row = 7,padx = 1,pady = 1) 
         ttk.Label(self,text ="Last Euribor (%):").grid(column = 2,row = 8,padx = 1,pady = 1)  
 
-        ttk.Label(self,text ="Valuation",font='Helvetica 10 bold').grid(column = 0,row = 9,padx = 1,pady = 1)  
+        ttk.Label(self,text ="Valuation:",font='Helvetica 10 bold').grid(column = 0,row = 9,padx = 1,pady = 1)  
         ttk.Label(self,text ="Fixed Leg:").grid(column = 0,row =10,padx = 1,pady = 1)
         ttk.Label(self,text ="Float Leg:").grid(column = 2,row =10,padx = 1,pady = 1)  
         ttk.Label(self,text ="Swap Price:").grid(column = 0,row =12,padx = 1,pady = 1) 
         ttk.Label(self,text ="DV01 (Per basis point):").grid(column = 2,row =12,padx = 1,pady = 1)
+
+        ttk.Label(self,text ="Flat Rate:",font='Helvetica 10 bold').grid(column = 0,row = 17,padx = 1,pady = 1)  
 
         self.valueRB_tab4 = Radiobutton(self, Rec_Fixed=0, Pay_Fixed=1)
         self.valueRB_tab4.store['Rec_Fixed'].grid(column = 1,row = 3,padx = 1,pady = 1)
@@ -473,14 +472,9 @@ class SwapsCalculator(_BaseTab):
         self.pri2_tab4 = Entry(self).grid(column = 3,row = 10,padx = 1,pady = 1) 
         self.sPri_tab4 = Entry(self).grid(column = 1,row = 12,padx = 1,pady = 1) 
         self.sen_tab4 = Entry(self).grid(column = 3,row = 12,padx = 1,pady = 1) 
-        
+        self.flatRate_tab4 = Entry(self).grid(column = 1,row = 18,padx = 1,pady = 1) 
 
 
-
-
-
-
-#A terminer
 class RatesCurve(_BaseTab):
     def __init__(self, notebook):
         _BaseTab.__init__(

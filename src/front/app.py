@@ -96,38 +96,73 @@ if __name__ == '__main__':
 
 
     #Bonds calculator widgets - tab3--------------------------------------------------------------------------------------------------------------------------------------------------------
+    import pandas as pd
     tab3.label_titre.grid(columnspan = 4,row = 0,padx = 20,pady = 20) 
 
-    def callback_option_calculation_tab3():
+    def callback_bond_calculation_tab3():
+        
+        #courbes de taux:
+        data = pd.read_excel('C:/Users/paul/OneDrive/Bureau/python/Pricer Python/ratesCurve.xlsx')
+        dataRatesCurve = refreshCurve2(data)
+
+        #récupération des inputs:
         prin2_tab3 = tab3.prin_tab3.get()
-        bonl2_tab3 = tab3.bonl_tab3.get()
         cour2_tab3 = tab3.cour_tab3.get()
         setf2_tab3 = tab3.setf_tab3.get()
+        couponDate_tab3 = tab3.couponDate_tab3.get() 
 
+        global flows
 
-       #à renseigner tous les inputs rate
+        prix, YTM , macDuration, modDuration, conv, sensi, flows = bond_calculation(prin2_tab3, cour2_tab3, setf2_tab3, couponDate_tab3,dataRatesCurve)
 
-        price, ytm, dur, mdur, con = bond_calculation_tab3(prin2_tab3, bonl2_tab3, cour2_tab3, setf2_tab3, r1=0, r2=0, r3=0, r4=0, r5=0, r6=0, r7=0, r8=0, r9=0, r10=0, r11=0, r12=0)
-        #price, ytm, dur, mdur, con = bond_calculation_tab3(prin2_tab3, bonl2_tab3, cour2_tab3, setf2_tab3, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12)
+        tab3.pric_tab3.set(round(prix,2))
+        tab3.ytm_tab3.set(round(YTM,2))
+        tab3.dur_tab3.set(round(macDuration,2))
+        tab3.mdur_tab3.set(round(modDuration,2))
+        tab3.con_tab3.set(round(conv,2))
+        tab3.sen_tab3.set(round(sensi,2))
 
-        tab3.pric_tab3.set(round(price,5))
-        tab3.ytm_tab3.set(round(ytm,5))
-        tab3.dur_tab3.set(round(dur,5))
-        tab3.mdur_tab3.set(round(mdur,5))
-        tab3.con_tab3.set(round(con,5))
+    ttk.Button(tab3,text = "CALCULATE", command=callback_bond_calculation_tab3).grid(column = 3,row = 16,padx = 1,pady = 11)
 
+    #à revoir et à mettre au bon endroit + permettre le copier coller ? + mettre en commun avec tab4 (faire une classe?)
+    def flows_display_tab3(tab):
+        mywin=Tk()
+        mywin.geometry('1650x400')
 
-    ttk.Button(tab3,text = "CALCULATE", command=callback_option_calculation_tab3).grid(column = 3,row = 15,padx = 1,pady = 11)
+        df_list=list(tab.columns.values)
+        df_rset=tab.to_numpy().tolist()
+        df_tree=ttk.Treeview(mywin,columns=df_list)
+        df_tree.pack()
+    
+        for i in df_list:
+            df_tree.column(i,width=100,anchor='c')
+            df_tree.heading(i,text=i)
+        for dt in df_rset:
+            v=[r for r in dt]
+            df_tree.insert('','end',iid=v[0], values=v)
+
+        mywin.mainloop()
+
+    def callback_display_flows_tab3():
+        flows_display_tab3(flows)
+
+    ttk.Button(tab3,text = "Flows", command=callback_display_flows_tab3).grid(column = 1,row = 7,padx = 1,pady = 1)
 
 
     #Swaps calculator widgets - tab4--------------------------------------------------------------------------------------------------------------------------------------------------------
     import pandas as pd
+ 
     tab4.label_titre.grid(columnspan = 4,row = 0,padx = 20,pady = 20) 
      
     #idée: aller chercher les tenors sur internet via API ????
     def callback_option_calculation_1_tab4():
+        dataToCopy = pd.read_excel('C:/Users/paul/OneDrive/Bureau/python/Pricer Python/ratesCurve.xlsx', header = None)
+        for i in range(7):  # Boucle sur les colonnes de votre DataFrame (7 colonnes dans cet exemple)
+        # Convertir les valeurs de la colonne en une chaîne de texte sans indexation
+            col_str = dataToCopy.iloc[:20, i].to_string(index=False)
+            ttk.Label(tab5, text=col_str).grid(column=i, row=2)
+        
         data = pd.read_excel('C:/Users/paul/OneDrive/Bureau/python/Pricer Python/ratesCurve.xlsx')
-        ttk.Label(tab5,text = data.iloc[:,0:6]).grid(column = 0,row = 2,padx = 1,pady = 1)
         dataRatesCurve = refreshCurve(data)
 
     ttk.Button(tab4,text = "Refresh Curve", command=callback_option_calculation_1_tab4).grid(column = 0,row = 14,padx = 1,pady = 1)
@@ -140,7 +175,6 @@ if __name__ == '__main__':
         
         startDate_tab4 = tab4.startDate_tab4.get() #4/9/24
         endDate_tab4 = tab4.endDate_tab4.get() #4/9/24
-
         valueRB_tab4 = tab4.valueRB_tab4.get()  #vaut 0 actuellement quand on rec
         not1_tab4 =tab4.not1_tab4.get()
         not2_tab4 = tab4.not2_tab4.get()
@@ -156,7 +190,7 @@ if __name__ == '__main__':
         global tab2
         global tab22
 
-        priceSwap, dv01, priceFixed, priceFloat, tab1, tab2, tab22= swapComputation(startDate_tab4,endDate_tab4,valueRB_tab4,not1_tab4,not2_tab4,rat1_tab4,fr2_tab4,setf1_tab4,setf2_tab4,bas1_tab4,bas2_tab4,lase_tab4,dataRatesCurve)
+        priceSwap, dv01, priceFixed, priceFloat, tab1, tab2, tab22 = swapComputation(startDate_tab4,endDate_tab4,valueRB_tab4,not1_tab4,not2_tab4,rat1_tab4,fr2_tab4,setf1_tab4,setf2_tab4,bas1_tab4,bas2_tab4,lase_tab4,dataRatesCurve)
         tab4.pri1_tab4.set(round(priceFixed,5))
         tab4.pri2_tab4.set(round(priceFloat,5))
         tab4.sen_tab4.set(round(dv01,5))
@@ -165,6 +199,38 @@ if __name__ == '__main__':
     ttk.Button(tab4,text = "CALCULATE",command=callback_option_calculation_2_tab4).grid(column = 0,row = 15,padx = 1,pady = 1)
 
     
+    def callback_option_calculation_3_tab4():
+        data = pd.read_excel('C:/Users/paul/OneDrive/Bureau/python/Pricer Python/ratesCurve.xlsx')
+        dataRatesCurve = refreshCurve2(data)
+
+        startDate_tab4 = tab4.startDate_tab4.get()
+        endDate_tab4 = tab4.endDate_tab4.get()
+        valueRB_tab4 = tab4.valueRB_tab4.get()
+        not1_tab4 =tab4.not1_tab4.get()
+        not2_tab4 = tab4.not2_tab4.get()
+        
+        setf1_tab4 = tab4.setf1_tab4.get()
+        bas1_tab4 = tab4.bas1_tab4.get()
+        fr2_tab4 = tab4.fr2_tab4.get()
+        setf2_tab4 = tab4.setf2_tab4.get()
+        bas2_tab4 = tab4.bas2_tab4.get()
+        lase_tab4 = tab4.lase_tab4.get() 
+
+        #calcul du flat rate
+        df = dataRatesCurve[fr2_tab4]
+        rat1_tab4 = df.mean()
+        
+        priceSwap, dv01, priceFixed, priceFloat, tab1, tab2, tab22 = swapComputation(startDate_tab4,endDate_tab4,valueRB_tab4,not1_tab4,not2_tab4,rat1_tab4,fr2_tab4,setf1_tab4,setf2_tab4,bas1_tab4,bas2_tab4,lase_tab4,dataRatesCurve)
+    
+        rateShift = priceSwap / dv01 / 100
+        flatRate = rat1_tab4 + rateShift
+
+        tab4.flatRate_tab4.set(round(flatRate,5))
+
+
+    ttk.Button(tab4,text = "CALCULATE",command=callback_option_calculation_3_tab4).grid(column = 0,row = 18,padx = 1,pady = 1)
+
+
     #à revoir et à mettre au bon endroit + permettre le copier coller ? 
     def flows_display_tab4(tab):
         mywin=Tk()
